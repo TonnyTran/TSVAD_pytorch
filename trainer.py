@@ -1,0 +1,187 @@
+import torch, sys, os, tqdm, numpy, soundfile, time, pickle, glob, random, scipy, signal, subprocess
+import torch.nn as nn
+from tools import *
+from loss import *
+# from model.ts_vad import TS_VAD
+from model.ts_vad_resnet import TS_VAD
+from collections import defaultdict, OrderedDict
+from torch.cuda.amp import autocast,GradScaler
+from scipy import signal
+
+def init_trainer(args):
+	s = trainer(args)
+	args.epoch = 1
+	if len(args.modelfiles) >= 1:
+		print("Model %s loaded from previous state!"%args.modelfiles[-1])
+		args.epoch = int(os.path.splitext(os.path.basename(args.modelfiles[-1]))[0][6:]) + 1
+		s.load_parameters(args.modelfiles[-1])
+	return s
+
+def change_zeros_to_ones(inputs, min_silence):
+	res = []
+	num_0 = 0
+	thr = int(min_silence // 0.04)
+	for i in inputs:
+		if i >= 0.5:
+			if num_0 != 0:
+				if num_0 > thr:
+					res.extend([0] * num_0)
+				else:
+					res.extend([1] * num_0)
+				num_0 = 0		
+			res.extend([1])
+		else:
+			num_0 += 1
+	if num_0 > thr:
+		res.extend([0] * num_0)
+	else:
+		res.extend([1] * num_0)
+	return res
+
+def change_ones_to_zeros(inputs, min_speech):
+	res = []
+	num_1 = 0
+	thr = int(min_speech // 0.04)
+	for i in inputs:
+		if i < 0.5:
+			if num_1 != 0:
+				if num_1 > thr:
+					res.extend([1] * num_1)
+				else:
+					res.extend([0] * num_1)
+				num_1 = 0		
+			res.extend([0])
+		else:
+			num_1 += 1
+	if num_1 > thr:
+		res.extend([1] * num_1)
+	else:
+		res.extend([0] * num_1)
+	return res
+
+
+
+class trainer(nn.Module):
+	def __init__(self, args):
+		super(trainer, self).__init__()
+		self.ts_vad          = TS_VAD(args).cuda()
+		self.ts_loss         = Loss().cuda()	
+		self.optim           = torch.optim.Adam(self.parameters(), lr = args.lr, weight_decay = 2e-5)
+		self.scheduler       = torch.optim.lr_scheduler.StepLR(self.optim, step_size = args.test_step, gamma = args.lr_decay)
+		print(" ts_vad model para number = %.2f"%(sum(param.numel() for param in self.ts_vad.parameters()) / 1e6))
+
+	def train_network(self, args):
+		self.train()
+		scaler = GradScaler()
+		self.scheduler.step(args.epoch - 1)
+		index, nloss = 0, 0
+		lr = self.optim.param_groups[0]['lr']
+		time_start = time.time()
+
+		for num, (rs, ts, labels) in enumerate(args.trainLoader, start = 1):
+			self.zero_grad()
+			labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
+			with autocast():
+				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
+				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
+				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
+				loss, _    = self.ts_loss.forward(outs, labels)	
+			scaler.scale(loss).backward()
+			scaler.step(self.optim)
+			scaler.update()
+			index += len(labels)
+			nloss += loss.detach().cpu().numpy()
+			time_used = time.time() - time_start
+			sys.stderr.write("Train: [%2d] %.2f%% (est %.1f mins) Lr: %5f, Loss: %.5f\r"%\
+			(args.epoch, 100 * (num / args.trainLoader.__len__()), time_used * args.trainLoader.__len__() / num / 60, \
+			lr, nloss/(num)))
+			sys.stderr.flush()			
+		sys.stdout.write("\n")
+
+		args.score_file.write("Train: %d epoch, LR %f, LOSS %f\n"%(args.epoch, lr, nloss/num))
+		args.score_file.flush()
+		return
+		
+	def eval_network(self, args):
+		self.eval()
+		index, nloss = 0, 0
+		time_start = time.time()
+		res_dict = defaultdict(lambda: defaultdict(list))
+		rttm = open('res_rttm', "w")		
+		for num, (rs, ts, labels, filename, speaker_id, start) in enumerate(args.evalLoader, start = 1):
+			labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
+			with torch.no_grad():		
+				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
+				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())	
+				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
+				loss, outs   = self.ts_loss.forward(outs, labels)
+				B, _, T = outs.shape
+				for b in range(B):
+					for t in range(T):
+						n = max(speaker_id[b,:].cpu().numpy())
+						for i in range(n):
+							id = speaker_id[b,i].cpu().numpy()
+							name = filename[b]
+							out = outs[b,i,t]
+							t0 = start[b].numpy()
+							res_dict[str(name) + '-' + str(id)][t0 + t].append(out)
+			index += len(labels)
+			nloss += loss.detach().cpu().numpy()
+			time_used = time.time() - time_start
+			sys.stderr.write("Eval: [%2d] %.2f%% (est %.1f mins) Loss: %.5f\r"%\
+			(args.epoch, 100 * (num / args.evalLoader.__len__()), time_used * args.evalLoader.__len__() / num / 60, \
+			nloss/(num)))
+			sys.stderr.flush()
+		min_silence = 0.64
+		min_speech = 0.00
+		for filename in tqdm.tqdm(res_dict):
+			name, speaker_id =filename.split('-')
+			labels = res_dict[filename]
+			ave_labels = []
+			for key in labels:	
+				ave_labels.append(numpy.mean(labels[key]))
+			labels = signal.medfilt(ave_labels, 21)			
+			labels = change_zeros_to_ones(labels, min_silence)
+			labels = change_ones_to_zeros(labels, min_speech)
+			start, duration = 0, 0
+			for i, label in enumerate(labels):
+				if label == 1:
+					duration += 0.04
+				else:
+					if duration != 0:
+						line = "SPEAKER " + str(name) + ' 1 %.3f'%(start) + ' %.3f ' %(duration) + '<NA> <NA> ' + str(speaker_id) + ' <NA> <NA>\n'
+						rttm.write(line)
+						duration = 0
+					start = i * 0.04
+			if duration != 0:
+				line = "SPEAKER " + str(name) + ' 1 %.3f'%(start) + ' %.3f ' %(duration) + '<NA> <NA> ' + str(speaker_id) + ' <NA> <NA>\n'
+				rttm.write(line)
+		rttm.close()
+		print('\n')
+		out = subprocess.check_output(['perl', 'SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.25', '-s res_rttm', '-r SCTK-2.4.12/all.rttm'])
+		out = out.decode('utf-8')
+		DER, MS, FA, SC = float(out.split('/')[0]), float(out.split('/')[1]), float(out.split('/')[2]), float(out.split('/')[3])
+		print("Eval: %d epoch, DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%, LOSS %f\n"%(args.epoch, DER, MS, FA, SC, nloss/num))
+		args.score_file.write("Eval: %d epoch, DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%, LOSS %f\n"%(args.epoch, DER, MS, FA, SC, nloss/num))
+		args.score_file.flush()
+
+	def save_parameters(self, path):
+		model = OrderedDict(list(self.ts_vad.state_dict().items()) + list(self.ts_loss.state_dict().items()))
+		torch.save(model, path)
+
+	def load_parameters(self, path):
+		selfState = self.state_dict()
+		loadedState = torch.load(path)
+		for name, param in loadedState.items():
+			origName = name
+			if name not in selfState:
+				name = 'ts_vad.' + name
+				if name not in selfState:
+					name = name.replace('ts_vad', 'ts_loss')
+					if name not in selfState:
+						print("%s is not in the model."%origName)
+						continue
+			if selfState[name].size() != loadedState[origName].size():
+				sys.stderr.write("Wrong parameter length: %s, model: %s, loaded: %s"%(origName, selfState[name].size(), loadedState[origName].size()))
+				continue
+			selfState[name].copy_(param)
