@@ -176,6 +176,8 @@ class ResNet(nn.Module):
         #         x = x.log()   
         #         x = x - torch.mean(x, dim=-1, keepdim=True)
         # x = x.permute(0, 2, 1)  # (B,T,F) => (B,F,T)
+        
+        x = x - torch.mean(x, dim=-1, keepdim=True) # Update CMN
 
         x = x.unsqueeze_(1)
         out = F.relu(self.bn1(self.conv1(x)))
