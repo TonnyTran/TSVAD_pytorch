@@ -236,7 +236,7 @@ class eval_loader(object):
 		for speaker_id in speaker_ids:
 			path = os.path.join(self.eval_path, file, str(speaker_id) + '.wav')
 			start = 0
-			stop = start + int(self.ts_len / 40 * 16000) + 240
+			stop = start + int(self.ts_len / 25 * 16000) + 240
 			target_speech, _ = soundfile.read(path, start = start, stop = stop)
 			target_speech = torch.FloatTensor(numpy.array(target_speech))
 			target_speech = (target_speech * (1 << 15)).unsqueeze(0)			
