@@ -122,8 +122,8 @@ for text_grid in tqdm.tqdm(text_grids):
             new_audio.extend(orig_audio[int(s):int(e)])
         
         res = {'filename':id_full, 'speaker_key':key, 'labels':labels}
-        json.dump(res, outs)
-        outs.write('\n')        
+#         json.dump(res, outs)
+#         outs.write('\n')        
         soundfile.write(output_wav, new_audio, 16000)
     output_wav = os.path.join(output_dir, 'all.wav')
     soundfile.write(output_wav, orig_audio, 16000)
