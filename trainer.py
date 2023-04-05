@@ -2,8 +2,7 @@ import torch, sys, os, tqdm, numpy, soundfile, time, pickle, glob, random, scipy
 import torch.nn as nn
 from tools import *
 from loss import *
-# from model.ts_vad import TS_VAD
-from model.ts_vad_resnet import TS_VAD
+from model.ts_vad import TS_VAD
 from collections import defaultdict, OrderedDict
 from torch.cuda.amp import autocast,GradScaler
 from scipy import signal
@@ -11,64 +10,23 @@ from scipy import signal
 def init_trainer(args):
 	s = trainer(args)
 	args.epoch = 1
+	if args.init_model != "":
+		print("Model %s loaded from pretrain!"%args.init_model)
+		s.load_parameters(args.init_model)		
 	if len(args.modelfiles) >= 1:
 		print("Model %s loaded from previous state!"%args.modelfiles[-1])
 		args.epoch = int(os.path.splitext(os.path.basename(args.modelfiles[-1]))[0][6:]) + 1
 		s.load_parameters(args.modelfiles[-1])
 	return s
 
-def change_zeros_to_ones(inputs, min_silence):
-	res = []
-	num_0 = 0
-	thr = int(min_silence // 0.04)
-	for i in inputs:
-		if i >= 0.5:
-			if num_0 != 0:
-				if num_0 > thr:
-					res.extend([0] * num_0)
-				else:
-					res.extend([1] * num_0)
-				num_0 = 0		
-			res.extend([1])
-		else:
-			num_0 += 1
-	if num_0 > thr:
-		res.extend([0] * num_0)
-	else:
-		res.extend([1] * num_0)
-	return res
-
-def change_ones_to_zeros(inputs, min_speech):
-	res = []
-	num_1 = 0
-	thr = int(min_speech // 0.04)
-	for i in inputs:
-		if i < 0.5:
-			if num_1 != 0:
-				if num_1 > thr:
-					res.extend([1] * num_1)
-				else:
-					res.extend([0] * num_1)
-				num_1 = 0		
-			res.extend([0])
-		else:
-			num_1 += 1
-	if num_1 > thr:
-		res.extend([1] * num_1)
-	else:
-		res.extend([0] * num_1)
-	return res
-
-
-
 class trainer(nn.Module):
 	def __init__(self, args):
 		super(trainer, self).__init__()
 		self.ts_vad          = TS_VAD(args).cuda()
 		self.ts_loss         = Loss().cuda()	
-		self.optim           = torch.optim.Adam(self.parameters(), lr = args.lr, weight_decay = 2e-5)
+		self.optim           = torch.optim.AdamW(self.parameters(), lr = args.lr)
 		self.scheduler       = torch.optim.lr_scheduler.StepLR(self.optim, step_size = args.test_step, gamma = args.lr_decay)
-		print(" ts_vad model para number = %.2f"%(sum(param.numel() for param in self.ts_vad.parameters()) / 1e6))
+		print("Model para number = %.2f"%(sum(param.numel() for param in self.ts_vad.parameters()) / 1e6))
 
 	def train_network(self, args):
 		self.train()
@@ -107,15 +65,16 @@ class trainer(nn.Module):
 		index, nloss = 0, 0
 		time_start = time.time()
 		res_dict = defaultdict(lambda: defaultdict(list))
-		rttm = open('res_rttm', "w")		
+		rttm = open(args.rttm_save_path, "w")		
 		for num, (rs, ts, labels, filename, speaker_id, start) in enumerate(args.evalLoader, start = 1):
 			labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
 			with torch.no_grad():		
 				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
-				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())	
+				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
 				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
 				loss, outs   = self.ts_loss.forward(outs, labels)
 				B, _, T = outs.shape
+				labels = labels.cpu().numpy()
 				for b in range(B):
 					for t in range(T):
 						n = max(speaker_id[b,:].cpu().numpy())
@@ -132,8 +91,6 @@ class trainer(nn.Module):
 			(args.epoch, 100 * (num / args.evalLoader.__len__()), time_used * args.evalLoader.__len__() / num / 60, \
 			nloss/(num)))
 			sys.stderr.flush()
-		min_silence = 0.64
-		min_speech = 0.00
 		for filename in tqdm.tqdm(res_dict):
 			name, speaker_id =filename.split('-')
 			labels = res_dict[filename]
@@ -141,8 +98,8 @@ class trainer(nn.Module):
 			for key in labels:	
 				ave_labels.append(numpy.mean(labels[key]))
 			labels = signal.medfilt(ave_labels, 21)			
-			labels = change_zeros_to_ones(labels, min_silence)
-			labels = change_ones_to_zeros(labels, min_speech)
+			labels = change_zeros_to_ones(labels, args.min_silence, args.threshold)
+			labels = change_ones_to_zeros(labels, args.min_speech, args.threshold)
 			start, duration = 0, 0
 			for i, label in enumerate(labels):
 				if label == 1:
@@ -158,7 +115,7 @@ class trainer(nn.Module):
 				rttm.write(line)
 		rttm.close()
 		print('\n')
-		out = subprocess.check_output(['perl', 'SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.25', '-s res_rttm', '-r SCTK-2.4.12/all.rttm'])
+		out = subprocess.check_output(['perl', 'SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.25', '-s %s'%(args.rttm_save_path), '-r SCTK-2.4.12/all.rttm'])
 		out = out.decode('utf-8')
 		DER, MS, FA, SC = float(out.split('/')[0]), float(out.split('/')[1]), float(out.split('/')[2]), float(out.split('/')[3])
 		print("Eval: %d epoch, DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%, LOSS %f\n"%(args.epoch, DER, MS, FA, SC, nloss/num))

@@ -5,6 +5,7 @@
 *.mp4
 *.txt
 *.pcm
+log.txt
 data/
 tests/
 exps/
@@ -12,6 +13,8 @@ demo/*
 pretrain/
 .gitignore/
 run_eval.sh
+model/ts_vad_retry.py
+model/ts_vad_resnet.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

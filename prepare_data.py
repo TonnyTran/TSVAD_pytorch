@@ -105,7 +105,7 @@ for text_grid in tqdm.tqdm(text_grids):
     orig_audio = orig_audio[:,0]
     length = len(orig_audio) 
 
-    # Cut and save the clean speech part
+    # # Cut and save the clean speech part
     id_full = wav_file.split('/')[-1][:-4]
     for key in new_intervals:
         output_dir = os.path.join(path_train_target_wav, id_full)
@@ -122,8 +122,6 @@ for text_grid in tqdm.tqdm(text_grids):
             new_audio.extend(orig_audio[int(s):int(e)])
         
         res = {'filename':id_full, 'speaker_key':key, 'labels':labels}
-        json.dump(res, outs)
-        outs.write('\n')        
         soundfile.write(output_wav, new_audio, 16000)
     output_wav = os.path.join(output_dir, 'all.wav')
     soundfile.write(output_wav, orig_audio, 16000)

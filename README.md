@@ -1,17 +1,28 @@
-*TS-VAD*
+# TS-VAD
 
-**Usage**
-- 两个pretrain模型放在pretrain文件夹里 
-  - Wavlm-base+: https://drive.google.com/file/d/1-zlAj2SyVJVsbhifwpTlAfrgc9qu-HDb/view?usp=share_link
-  - ecapa-tdnn: https://github.com/TaoRuijie/ECAPA-TDNN/blob/main/exps/pretrain.model. (记得改名字成ecapa-tdnn.model）
-- 先run prepare_data.py 生成 1. target_speech_data 2. training and eval list
-- 再bash run.sh, 更改其中的路径
-- Best Result: DER = 13.61
+## Prepare
+- [My json files + extracted speaker embedding + trained ts-vad model + training log](https://drive.google.com/drive/folders/1AFip2h9W7sCFbzzasL_fAkGUNZOzaTGK?usp=share_link)
+- [wavlm pretrain model](https://drive.google.com/file/d/1-zlAj2SyVJVsbhifwpTlAfrgc9qu-HDb/view?usp=share_link)
 
-**To do**
-- 和Speaker diraization模型连一起看看最后结果
-- 模型我乱搭的 看看怎么改
-- 加载pretrain的模型的代码写的稀碎，可以改一下
+## Usage
+- run prepare_data.py to obatin the all.wav files
+- bash run_train.sh for training
+- bash run_eval.sh for evaluation
 
-**Conclusion**
-- 正常的speaker_ids效果好一些
+- best Result: DER / MS / FA / SC= 8.58 / 3.18 / 3.82 / 1.58
+- You can use bash run_eval.sh to check this result, set test_shift=2 
+
+## Explaination
+- Speaker embedding is extracted from ecapa-tdnn model. I train this model on CnCeleb1+2+Alimeeting Training set
+- Current system uses ground-truth speaker embedding, silence part is not predicted or trained by TS-VAD
+
+## Difference with last version
+- Fix the bug for position embedding (Very faster than before, get some improvements)
+- Retrain the speaker embedding on CnCeleb1+2+Alimeeting (Similar)
+- Offline speaker embedding (1 point improvement)
+- Random the start frame for training
+- Remove the augmentation
+- Remove the ResNet model
+- Add some arguments for debugging
+- Longer input (16s instead of 6s), Shorter Warm up epoch (10 is enough)
+- ... Others, I forget
