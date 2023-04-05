@@ -12,7 +12,6 @@ exps/
 demo/*
 pretrain/
 .gitignore/
-run_eval.sh
 model/ts_vad_retry.py
 model/ts_vad_resnet.py
 
