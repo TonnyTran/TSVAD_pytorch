@@ -43,8 +43,7 @@ class TS_VAD(nn.Module):
         return x
 
     # Obtain the target speaker represnetation
-    def ts_forward(self, x): # B, 4, 192
-        x = F.normalize(x, p=2, dim=1)
+    def ts_forward(self, x): # B, 4, 192        
         return x
 
     # Combine for ts-vad results

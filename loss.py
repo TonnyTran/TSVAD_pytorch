@@ -17,7 +17,7 @@ class Loss(nn.Module):
         # Remove the loss for the all slience part, slience part: predict 0 directly
         slience_labels = torch.sum(labels, dim = 1)
         slience_labels = slience_labels * torch.ones_like(slience_labels)
-        slience_labels = torch.where(slience_labels >= 1, 1, 0)
+        # slience_labels = torch.where(slience_labels >= 1, 1, 0)
 
         num_no_slience = sum(sum(slience_labels))
         for i in range(4):

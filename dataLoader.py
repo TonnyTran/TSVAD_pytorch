@@ -139,7 +139,10 @@ class eval_loader(object):
 		for speaker_id in speaker_ids:
 			full_label_id = file + '_' + str(speaker_id)
 			label = self.label_dic[full_label_id]
-			labels.append(label[start:stop])
+			label_here = label[start:stop]
+			# if len(label_here) < stop - start:
+			# 	label_here = [0] * (stop - start)
+			labels.append(label_here)
 		labels = numpy.array(labels)
 		return ref_speech, labels
 	
