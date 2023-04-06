@@ -6,4 +6,6 @@ python main.py \
 --train_path /data08/alimeeting/Train_Ali_far \
 --eval_path /data08/alimeeting/Eval_Ali_far \
 --save_path exps/res1 \
+--warm_up_epoch 10 \
+--lr 0.0001 \
 --train

@@ -6,7 +6,7 @@ python main.py \
 --train_path /data08/alimeeting/Train_Ali_far \
 --eval_path /data08/alimeeting/Eval_Ali_far \
 --save_path exps/res1 \
---init_model pretrain/ts-vad.model \
+--init_model exps/res1/model/model_0027.model \
 --rs_len 16 \
 --test_shift 16 \
 --min_silence 0.32 \

@@ -13,7 +13,7 @@ def init_trainer(args):
 	if args.init_model != "":
 		print("Model %s loaded from pretrain!"%args.init_model)
 		s.load_parameters(args.init_model)		
-	if len(args.modelfiles) >= 1:
+	elif len(args.modelfiles) >= 1:
 		print("Model %s loaded from previous state!"%args.modelfiles[-1])
 		args.epoch = int(os.path.splitext(os.path.basename(args.modelfiles[-1]))[0][6:]) + 1
 		s.load_parameters(args.modelfiles[-1])
@@ -50,7 +50,7 @@ class trainer(nn.Module):
 			index += len(labels)
 			nloss += loss.detach().cpu().numpy()
 			time_used = time.time() - time_start
-			sys.stderr.write("Train: [%2d] %.2f%% (est %.1f mins) Lr: %5f, Loss: %.5f\r"%\
+			sys.stderr.write("Train: [%2d] %.2f%% (est %.1f mins) Lr: %6f, Loss: %.5f\r"%\
 			(args.epoch, 100 * (num / args.trainLoader.__len__()), time_used * args.trainLoader.__len__() / num / 60, \
 			lr, nloss/(num)))
 			sys.stderr.flush()			
