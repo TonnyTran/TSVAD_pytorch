@@ -9,6 +9,7 @@ log.txt
 ts-vad/exps
 ts-vad/backup
 ts-vad/pretrained_models/*
+ts-vad/model/ts_vad_light.py
 wespeaker_alimeeting/exp
 wespeaker_alimeeting/pretrained_models/*
 
