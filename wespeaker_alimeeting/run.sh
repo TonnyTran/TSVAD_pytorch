@@ -1,6 +1,5 @@
 stage=9
 stop_stage=10
-eval_der="light" # light or details
 data_path=/data08/alimeeting
 eval_path=${data_path}/Eval_Ali_far
 pseudo_path=${data_path}/Pseudo_Ali_far
@@ -78,13 +77,7 @@ fi
 
 if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then    
     echo "[6] Get DER result"
-    if [[ "${eval_der}" == "light" ]]; then
     perl external_tools/SCTK-2.4.12/src/md-eval/md-eval.pl -c 0.25 -r exp/label/all.rttm -s exp/predict/res_rttm 
-    fi
-
-    if [[ "${eval_der}" == "details" ]]; then
-    python external_tools/AliMeeting/speaker/dscore/score.py --collar 0.25 -r exp/label/all.rttm -s exp/predict/res_rttm
-    fi 
 fi
 
 if [ ${stage} -le 7 ] && [ ${stop_stage} -ge 7 ]; then
