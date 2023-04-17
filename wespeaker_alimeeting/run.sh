@@ -1,4 +1,4 @@
-stage=9
+stage=0
 stop_stage=10
 data_path=/data08/alimeeting
 eval_path=${data_path}/Eval_Ali_far
