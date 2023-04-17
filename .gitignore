@@ -6,14 +6,11 @@
 *.txt
 *.pcm
 log.txt
-data/
-tests/
-exps/
-demo/*
-pretrain/
-.gitignore/
-model/ts_vad_retry.py
-model/ts_vad_resnet.py
+ts-vad/exps
+ts-vad/backup
+ts-vad/pretrained_models/*
+wespeaker_alimeeting/exp
+wespeaker_alimeeting/pretrained_models/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
