@@ -99,10 +99,7 @@ if [ ${stage} -le 8 ] && [ ${stop_stage} -ge 8 ]; then
     python modules/extract_target_embedding.py \
         --target_audio_path ${target_audio_path} \
         --target_embedding_path ${target_embedding_path} \
-        --source pretrained_models/ecapa-tdnn.model \
-        --length_embedding 6 \
-        --step_embedding 1 \
-        --batch_size 96
+        --source pretrained_models/ecapa-tdnn.model
 fi
 
 if [ ${stage} -le 9 ] && [ ${stop_stage} -ge 9 ]; then
