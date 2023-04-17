@@ -11,7 +11,7 @@
         # │   ├── audio_dir
         # │   ├── textgrid_dir
 
-- [wavlm pretrain model](https://drive.google.com/file/d/1-zlAj2SyVJVsbhifwpTlAfrgc9qu-HDb/view?usp=share_link), put in 'ts-vad/pretrained_models'
+- [wavlm pretrain model](https://drive.google.com/file/d/1-zlAj2SyVJVsbhifwpTlAfrgc9qu-HDb/view?usp=share_link), put in 'ts-vad/pretrained_models' (build this folder)
 
 ### from wespeaaker_alimeeting/run.sh shell
 - Use run.sh, step 1 can extract the target audio and embedding, genenerate the json file automaticlly.
