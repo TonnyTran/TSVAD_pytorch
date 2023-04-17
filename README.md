@@ -57,6 +57,8 @@ My dataset looks like this:
 - Clustering Result: DER / MS / FA / SC = 16.55 / 14.53 / 1.13 / 0.89
 - TS-VAD Result (Pseudo Label): DER / MS / FA / SC = 3.64 / 1.56 / 1.69 / 0.38
 
-## Explaination
+## Notice
+- Change the data path in wespeaker_alimeeting/run.sh, data_path=/data08/alimeeting
+- Change the data path in ts-vad/run_train.sh and run_eval.sh, include the musan and rir dataset path
 - Speaker embedding is extracted from ecapa-tdnn model. I train this model on CnCeleb1+2+Alimeeting Training set
 - To simply the code, the ground truth number of speakers are used in the wespeaker_alimeeting clustering process
