@@ -1,4 +1,4 @@
-stage=0
+stage=6
 stop_stage=10
 data_path=/data08/alimeeting
 eval_path=${data_path}/Eval_Ali_far
@@ -111,10 +111,10 @@ if [ ${stage} -le 9 ] && [ ${stop_stage} -ge 9 ]; then
     --save_path exps/debug \
     --rs_len 4 \
     --test_shift 1 \
-    --threshold 0.70 \
+    --threshold 0.50 \
     --n_cpu 12 \
     --eval \
-    --init_model pretrained_models/ts-vad.model
+    --init_model ../ts-vad/exps/res23/model/model_0036.model
     cd -
 fi
 

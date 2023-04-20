@@ -9,7 +9,7 @@ class TS_VAD(nn.Module):
         super(TS_VAD, self).__init__()
         # Speaker Encoder
         self.speech_encoder = ECAPA_TDNN(C = 1024)
-        loadedState = torch.load('pretrain/ecapa-tdnn.model', map_location="cuda")
+        loadedState = torch.load('pretrained_models/ecapa-tdnn.model', map_location="cuda")
         selfState = self.state_dict()
         for name, param in loadedState.items():
             origName = name
@@ -32,8 +32,8 @@ class TS_VAD(nn.Module):
             )
         self.pos_encoder = PositionalEncoding(384, dropout=0.05)    
         self.pos_encoder_m = PositionalEncoding(384, dropout=0.05)
-        self.single_backend = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=384, dim_feedforward = 384 * 4, nhead=4), num_layers=3)
-        self.multi_backend = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=384, dim_feedforward = 384 * 4, nhead=4), num_layers=3)
+        self.single_backend = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=384, dim_feedforward = 384 * 4, nhead=4), num_layers=2)
+        self.multi_backend = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=384, dim_feedforward = 384 * 4, nhead=4), num_layers=2)
 
     # B: batchsize, T: number of frames (1 frame = 0.04s)
     # Obtain the reference speech represnetation
