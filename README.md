@@ -51,11 +51,11 @@ My dataset looks like this:
 ## Usage
 - [1] bash run.sh in wespeaker_alimeeting, only step 1, to prepare dataset
 - [2] bash run_train.sh in ts-vad, obtain the ts-vad model
-- TS-VAD Result (Ground Truth): DER / MS / FA / SC = 3.67 / 1.61 / 1.68 / 0.38
+- TS-VAD Result (Ground Truth): DER / MS / FA / SC = 4.30 / 2.68 / 1.20 / 0.41
 - [3] bash run_eval.sh for evaluation (init_model: select the model for evaluation), evalute use ground truth speech
 - [4] bash run.sh in wespeaker_alimeeting, step 2 to step 9, can obtain two results:
 - Clustering Result: DER / MS / FA / SC = 16.55 / 14.53 / 1.13 / 0.89
-- TS-VAD Result (Pseudo Label): DER / MS / FA / SC = 3.64 / 1.56 / 1.69 / 0.38
+- TS-VAD Result (Pseudo Label): DER / MS / FA / SC = 4.43
 
 ## Notice
 - Change the data path in wespeaker_alimeeting/run.sh, data_path=/data08/alimeeting
