@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -q normal
+#PBS -j oe
+#PBS -l ngpus=4
+#PBS -l mem=10gb
+#PBS -N tsvad
+#PBS -l walltime=05:50:00
+#PBS -P Personal
+source /home/users/ntu/adnan002/miniconda3/bin/activate wespeak2
+cd /home/users/ntu/adnan002/scratch/repos/TSVAD_pytorch/ts-vad
+./run_train.sh
