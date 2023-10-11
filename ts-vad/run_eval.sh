@@ -1,10 +1,10 @@
 #!/bin/bash
 
 python main.py \
---train_list /home/users/ntu/adnan002/scratch/alimeeting/Train_Ali_far/ts_Train.json \
---eval_list /home/users/ntu/adnan002/scratch/alimeeting/Eval_Ali_far/ts_Eval.json \
---train_path /home/users/ntu/adnan002/scratch/alimeeting/Train_Ali_far \
---eval_path /home/users/ntu/adnan002/scratch/alimeeting/Eval_Ali_far \
+--train_list /home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_dev/data/ts_dev.json \
+--eval_list /home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_eval/data/ts_eval.json \
+--train_path /home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_dev/data \
+--eval_path /home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_eval/data \
 --save_path exps/res23 \
 --rs_len 4 \
 --test_shift 0.5 \
