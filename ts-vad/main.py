@@ -23,16 +23,16 @@ parser.add_argument('--threshold', type=float, default=0.50,      help='The thre
 parser.add_argument('--init_model',  type=str,   default="",  help='Init TS-VAD model from pretrain')
 
 ### Data path
-parser.add_argument('--train_list', type=str,   default="/data08/alimeeting/Train_Ali_far/ts_Train.json",     help='The path of the training list')
-parser.add_argument('--train_path', type=str,   default="/data08/alimeeting/Train_Ali_far", help='The path of the training data')
-parser.add_argument('--eval_list',  type=str,   default="/data08/alimeeting/ts_Eval.json",      help='The path of the evaluation list')
-parser.add_argument('--eval_path',  type=str,   default="/data08/alimeeting/Eval_Ali_far", help='The path of the evaluation data')
+parser.add_argument('--train_list', type=str,   default="/home/users/ntu/adnan002/scratch/alimeeting/Train_Ali_far/ts_Train.json",     help='The path of the training list')
+parser.add_argument('--train_path', type=str,   default="/home/users/ntu/adnan002/scratch/alimeeting/Train_Ali_far", help='The path of the training data')
+parser.add_argument('--eval_list',  type=str,   default="/home/users/ntu/adnan002/scratch/alimeeting/Eval_Ali_far/ts_Eval.json",      help='The path of the evaluation list')
+parser.add_argument('--eval_path',  type=str,   default="/home/users/ntu/adnan002/scratch/alimeeting/Eval_Ali_far", help='The path of the evaluation data')
 parser.add_argument('--save_path',  type=str,    default="", help='Path to save the clean list')
-parser.add_argument('--musan_path',  type=str,   default="/data08/Others/musan_split", help='The path of the evaluation data')
-parser.add_argument('--rir_path',  type=str,   default="/data08/Others/RIRS_NOISES/simulated_rirs", help='The path of the evaluation data')
+parser.add_argument('--musan_path',  type=str,   default="/home/users/ntu/adnan002/scratch/musan", help='The path of the evaluation data')
+parser.add_argument('--rir_path',  type=str,   default="/home/users/ntu/adnan002/scratch/RIRS_NOISES/simulated_rirs", help='The path of the evaluation data')
 
 ### Others
-parser.add_argument('--speech_encoder_pretrain',  type=str,   default="pretrained_models/WavLM-Base+.pt",  help='Path of the pretrained speech_encoder')
+parser.add_argument('--speech_encoder_pretrain',  type=str,   default="/home/users/ntu/adnan002/scratch/repos/TSVAD_pytorch/ts-vad/pretrained_models/WavLM-Base+.pt",  help='Path of the pretrained speech_encoder')
 parser.add_argument('--train',   dest='train', action='store_true', help='Do training')
 parser.add_argument('--eval',    dest='eval', action='store_true', help='Do evaluation')
 

@@ -15,11 +15,11 @@ class train_loader(object):
 		self.noisesnr = {'noise':[0,15],'speech':[13,20],'music':[5,15]}
 		self.numnoise = {'noise':[1,1], 'speech':[3,8], 'music':[1,1]}
 		self.noiselist = {}
-		augment_files   = glob.glob(os.path.join(musan_path,'*/*/*/*.wav'))
+		augment_files   = glob.glob(os.path.join(musan_path,'*/*/*.wav'))
 		for file in augment_files:
-			if file.split('/')[-4] not in self.noiselist:
-				self.noiselist[file.split('/')[-4]] = []
-			self.noiselist[file.split('/')[-4]].append(file)
+			if file.split('/')[-3] not in self.noiselist:
+				self.noiselist[file.split('/')[-3]] = []
+			self.noiselist[file.split('/')[-3]].append(file)
 		self.rir_files  = glob.glob(os.path.join(rir_path,'*/*/*.wav'))
 
 		self.train_path = train_path	
@@ -62,24 +62,27 @@ class train_loader(object):
 		# labels : 4, T
 		# target_speech: 4, 192
 		file, num_speaker, start, stop = self.data_list[index]
-		speaker_ids = self.get_ids(num_speaker)
+		speaker_ids = self.get_ids(file, num_speaker)
 		ref_speech, labels = self.load_rs(file, speaker_ids, start, stop)
 		target_speech = self.load_ts(file, speaker_ids)
 		return ref_speech, target_speech, labels
 	
-	def get_ids(self, num_speaker):
-		speaker_ids = []
+	def get_ids(self, file, num_speaker):
+		typee = file.split('_')[1].lower() # dev or eval
+		path = "/home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
 
-		for i in range(1, num_speaker + 1):
-			speaker_ids.append(i)
-		for i in range(num_speaker + 1, 5):
+		# get all the wav files in the path
+		folder = self.train_path + '/target_audio/' + file + '/*.wav'
+		audios = glob.glob(folder)
+		audios.remove(path + "/all.wav")
+		audios = [k.split('/')[-1].split('.')[0] for k in audios]
+		audios = [int(k) for k in audios]
+		speaker_ids = audios
+
+		speaker_ids = speaker_ids[:4]
+		while len(speaker_ids) < 4:
 			speaker_ids.append(0)
-		# if num_speaker == 2:
-		# 	speaker_ids = [1, 1, 2, 2]
-		# elif num_speaker == 3:
-		# 	speaker_ids = [1, 2, 3, random.choice([1,2,3])]
-		# else:
-		# 	speaker_ids = [1, 2, 3, 4]
+		
 		random.shuffle(speaker_ids)
 		return speaker_ids
 	
@@ -120,7 +123,7 @@ class train_loader(object):
 				candidate_speakers = [k for k in self.speaker_to_utt.keys() if k not in speakers_in_this_videos]
 				random_speaker = random.choice(candidate_speakers)
 				random_file = random.choice(self.speaker_to_utt[random_speaker])
-				path = self.train_path + '/target_embedding/' + random_file[:17] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				path = self.train_path + '/target_embedding/' + random_file[:11] + '/' + str(random_file.split('_')[-1]) + '.pt'
 			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = feature[random.randint(0,feature.shape[0]-1),:]
 			target_speeches.append(feature)
@@ -133,7 +136,7 @@ class train_loader(object):
 	def add_rev(self, audio, length):
 		rir_file    = random.choice(self.rir_files)
 		rir, _     = soundfile.read(rir_file)
-		rir         = numpy.expand_dims(rir.astype(numpy.float),0)
+		rir         = numpy.expand_dims(rir.astype(float),0)
 		rir         = rir / numpy.sqrt(numpy.sum(rir**2))
 		return signal.convolve(audio, rir, mode='full')[:,:length]
 
@@ -194,12 +197,30 @@ class eval_loader(object):
 
 	def __getitem__(self, index):
 		file, num_speaker, start, stop = self.data_list[index]
-		speaker_ids = self.get_ids(num_speaker)
+		speaker_ids = self.get_ids(file, num_speaker)
 		ref_speech, labels = self.load_rs(file, speaker_ids, start, stop)
 		target_speech = self.load_ts(file, speaker_ids)
 		return ref_speech, target_speech, labels, file, numpy.array(speaker_ids), numpy.array(start)
 	
-	def get_ids(self, num_speaker):
+	def get_ids(self, file, num_speaker):
+		typee = file.split('_')[1].lower() # dev or eval
+		path = "/home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+
+		# get all the wav files in the path
+		folder = self.train_path + '/target_audio/' + file + '/*.wav'
+		audios = glob.glob(folder)
+		audios.remove(path + "/all.wav")
+		audios = [k.split('/')[-1].split('.')[0] for k in audios]
+		audios = [int(k) for k in audios]
+		speaker_ids = audios
+
+		speaker_ids = speaker_ids[:4]
+		while len(speaker_ids) < 4:
+			speaker_ids.append(0)
+		
+		return speaker_ids
+
+		
 		speaker_ids = []
 		for i in range(1, num_speaker + 1):
 			speaker_ids.append(i)
@@ -236,7 +257,7 @@ class eval_loader(object):
 				candidate_speakers = [k for k in self.speaker_to_utt.keys() if k not in speakers_in_this_videos]
 				random_speaker = random.choice(candidate_speakers)
 				random_file = random.choice(self.speaker_to_utt[random_speaker])
-				path = self.eval_path + '/target_embedding/' + random_file[:17] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				path = self.eval_path + '/target_embedding/' + random_file[:12] + '/' + str(random_file.split('_')[-1]) + '.pt'
 			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = torch.mean(feature, dim = 0)
 			target_speeches.append(feature)
