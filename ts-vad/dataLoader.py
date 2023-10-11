@@ -207,7 +207,7 @@ class eval_loader(object):
 		path = "/home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
 
 		# get all the wav files in the path
-		folder = self.train_path + '/target_audio/' + file + '/*.wav'
+		folder = self.eval_path + '/target_audio/' + file + '/*.wav'
 		audios = glob.glob(folder)
 		audios.remove(path + "/all.wav")
 		audios = [k.split('/')[-1].split('.')[0] for k in audios]
