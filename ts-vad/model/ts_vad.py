@@ -8,7 +8,9 @@ class TS_VAD(nn.Module):
     def __init__(self, args):
         super(TS_VAD, self).__init__()
         # Speech Encoder
+        # TODO: Change back to cuda
         checkpoint = torch.load(args.speech_encoder_pretrain, map_location="cuda")
+        # checkpoint = torch.load(args.speech_encoder_pretrain, map_location="cpu")
         cfg  = WavLMConfig(checkpoint['cfg'])
         cfg.encoder_layers = 6
         self.speech_encoder = WavLM(cfg)
@@ -54,7 +56,10 @@ class TS_VAD(nn.Module):
         B, _, T, _ = ts_embeds.shape
         # Transformer for single speaker
         cat_embeds = []
+        # For Alimeeting the number of speakers is 4
         for i in range(4):
+        # For DIHARD the number of speakers is 7
+        # for i in range(7):
             ts_embed = ts_embeds[:, i, :, :] # B, T, 192
             cat_embed = torch.cat((ts_embed,rs_embeds), 2) # B, T, 192 + B, T, 192 -> B, T, 384
             cat_embed = cat_embed.transpose(0,1) # B, 384, T
@@ -63,16 +68,16 @@ class TS_VAD(nn.Module):
             cat_embed = cat_embed.transpose(0,1) # B, T, 384
             cat_embeds.append(cat_embed)
         cat_embeds = torch.stack(cat_embeds) # 4, B, T, 384
-        cat_embeds = torch.permute(cat_embeds, (1, 0, 3, 2)) # B, 4, 384, T
+        cat_embeds = cat_embeds.permute(1, 0, 3, 2) # B, 4, 384, T
         # Combine the outputs
         cat_embeds = cat_embeds.reshape((B, -1, T))  # B, 4 * 384, T
         # Downsampling
         cat_embeds = self.backend_down(cat_embeds)  # B, 384, T
         # Transformer for multiple speakers
-        cat_embeds = torch.permute(cat_embeds, (2, 0, 1)) # T, B, 384
+        cat_embeds = cat_embeds.permute(2, 0, 1) # T, B, 384
         cat_embeds = self.pos_encoder_m(cat_embeds)
         cat_embeds = self.multi_backend(cat_embeds) # T, B, 384
-        cat_embeds = torch.permute(cat_embeds, (1, 0, 2)) # B, T, 384
+        cat_embeds = cat_embeds.permute(1, 0, 2) # B, T, 384
         # Results for each speaker
         cat_embeds = cat_embeds.reshape((B, 4, T, -1))  # B, 4, T, 96
         return cat_embeds

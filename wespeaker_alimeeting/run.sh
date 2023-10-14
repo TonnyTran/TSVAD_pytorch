@@ -1,26 +1,33 @@
-stage=6
-stop_stage=10
-data_path=/data08/alimeeting
-eval_path=${data_path}/Eval_Ali_far
-pseudo_path=${data_path}/Pseudo_Ali_far
-audio_dir=${eval_path}/audio_dir
-textgrid_dir=${eval_path}/textgrid_dir
-eval_json=${eval_path}/ts_Eval.json
+stage=5
+stop_stage=5
+
+data_path=/home/users/ntu/tlkushag/scratch/data08/dihard
+eval_path=${data_path}/third_dihard_challenge_eval/data
+dev_path=${data_path}/third_dihard_challenge_dev/data
+audio_dir=${eval_path}/wav
+textgrid_dir=${eval_path}/textgrid
+
 target_audio_path=${pseudo_path}/target_audio
+eval_json=${eval_path}/ts_eval.json
+
+pseudo_path=${data_path}/pseudo
 target_embedding_path=${pseudo_path}/target_embedding
+
+
+curr_path=/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting
 
 if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
     echo "[1] Process dataset: Train/Eval dataset, get target speech and emebdding, get json files"
     mkdir -p exp/predict
     ls ${audio_dir}/*.wav | awk -F/ '{print substr($NF, 1, length($NF)-4), $0}' > exp/predict/wav.scp
-    python modules/prepare_data.py \
+    python ${curr_path}/modules/prepare_data.py \
         --data_path ${data_path} \
-        --type Eval \
-        --source pretrained_models/ecapa-tdnn.model
-    python modules/prepare_data.py \
+        --type eval \
+        --source ${curr_path}/pretrained_models/ecapa-tdnn.model
+    python ${curr_path}/modules/prepare_data.py \
         --data_path ${data_path} \
-        --type Train \
-        --source pretrained_models/ecapa-tdnn.model
+        --type dev \
+        --source ${curr_path}/pretrained_models/ecapa-tdnn.model
 fi
 
 

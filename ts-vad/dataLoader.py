@@ -15,7 +15,7 @@ class train_loader(object):
 		self.noisesnr = {'noise':[0,15],'speech':[13,20],'music':[5,15]}
 		self.numnoise = {'noise':[1,1], 'speech':[3,8], 'music':[1,1]}
 		self.noiselist = {}
-		augment_files   = glob.glob(os.path.join(musan_path,'*/*/*/*.wav'))
+		augment_files   = glob.glob(os.path.join(musan_path,'*/*/*.wav'))
 		for file in augment_files:
 			if file.split('/')[-4] not in self.noiselist:
 				self.noiselist[file.split('/')[-4]] = []
@@ -69,18 +69,12 @@ class train_loader(object):
 	
 	def get_ids(self, num_speaker):
 		speaker_ids = []
-
-		for i in range(1, num_speaker + 1):
+		# For Alimeeting the max number of speakers is 4
+		# For DiHard the max number of speakers is 7
+		for i in range(1, min(num_speaker+1, 5)):
 			speaker_ids.append(i)
-		for i in range(num_speaker + 1, 5):
+		for i in range(len(speaker_ids), 4):
 			speaker_ids.append(0)
-		# if num_speaker == 2:
-		# 	speaker_ids = [1, 1, 2, 2]
-		# elif num_speaker == 3:
-		# 	speaker_ids = [1, 2, 3, random.choice([1,2,3])]
-		# else:
-		# 	speaker_ids = [1, 2, 3, 4]
-		random.shuffle(speaker_ids)
 		return speaker_ids
 	
 	def load_rs(self, file, speaker_ids, start, stop):
@@ -120,7 +114,13 @@ class train_loader(object):
 				candidate_speakers = [k for k in self.speaker_to_utt.keys() if k not in speakers_in_this_videos]
 				random_speaker = random.choice(candidate_speakers)
 				random_file = random.choice(self.speaker_to_utt[random_speaker])
-				path = self.train_path + '/target_embedding/' + random_file[:17] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				# For DIHARD dataset where eval  format is DH_EVAL_0142_1 
+				if('EVAL' in random_file):
+					path = self.eval_path + '/target_embedding/' + random_file[:12] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				if('DEV' in random_file):
+					path = self.eval_path + '/target_embedding/' + random_file[:11] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				# For Alimeeting dataset
+				# path = self.train_path + '/target_embedding/' + random_file[:17] + '/' + str(random_file.split('_')[-1]) + '.pt'
 			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = feature[random.randint(0,feature.shape[0]-1),:]
 			target_speeches.append(feature)
@@ -191,7 +191,7 @@ class eval_loader(object):
 					num_speaker = len(audios) - 1
 					data_intro = [filename, num_speaker, start, start + self.rs_len]
 					self.data_list.append(data_intro)
-
+	
 	def __getitem__(self, index):
 		file, num_speaker, start, stop = self.data_list[index]
 		speaker_ids = self.get_ids(num_speaker)
@@ -201,9 +201,11 @@ class eval_loader(object):
 	
 	def get_ids(self, num_speaker):
 		speaker_ids = []
-		for i in range(1, num_speaker + 1):
+		# For Alimeeting the max number of speakers is 4
+		# For DiHard the max number of speakers is 7
+		for i in range(1, min(num_speaker+1, 5)):
 			speaker_ids.append(i)
-		for i in range(num_speaker + 1, 5):
+		for i in range(len(speaker_ids), 4):
 			speaker_ids.append(0)
 		return speaker_ids
 	
@@ -236,7 +238,13 @@ class eval_loader(object):
 				candidate_speakers = [k for k in self.speaker_to_utt.keys() if k not in speakers_in_this_videos]
 				random_speaker = random.choice(candidate_speakers)
 				random_file = random.choice(self.speaker_to_utt[random_speaker])
-				path = self.eval_path + '/target_embedding/' + random_file[:17] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				# For DIHARD dataset where eval  format is DH_EVAL_0142_1 
+				if('EVAL' in random_file):
+					path = self.eval_path + '/target_embedding/' + random_file[:12] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				if('DEV' in random_file):
+					path = self.eval_path + '/target_embedding/' + random_file[:11] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				# For Alimeeting dataset
+				# path = self.train_path + '/target_embedding/' + random_file[:17] + '/' + str(random_file.split('_')[-1]) + '.pt'			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = torch.mean(feature, dim = 0)
 			target_speeches.append(feature)
