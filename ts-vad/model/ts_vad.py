@@ -9,8 +9,8 @@ class TS_VAD(nn.Module):
         super(TS_VAD, self).__init__()
         # Speech Encoder
         # TODO: Change back to cuda
-        # checkpoint = torch.load(args.speech_encoder_pretrain, map_location="cuda")
-        checkpoint = torch.load(args.speech_encoder_pretrain, map_location="cpu")
+        checkpoint = torch.load(args.speech_encoder_pretrain, map_location="cuda")
+        # checkpoint = torch.load(args.speech_encoder_pretrain, map_location="cpu")
         cfg  = WavLMConfig(checkpoint['cfg'])
         cfg.encoder_layers = 6
         self.speech_encoder = WavLM(cfg)

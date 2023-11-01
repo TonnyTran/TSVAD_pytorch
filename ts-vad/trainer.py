@@ -24,11 +24,11 @@ class trainer(nn.Module):
 	def __init__(self, args):
 		super(trainer, self).__init__()
 		# TODO: Change back to cuda
-		# self.ts_vad          = TS_VAD(args).cuda()
-		self.ts_vad          = TS_VAD(args)
+		self.ts_vad          = TS_VAD(args).cuda()
+		# self.ts_vad          = TS_VAD(args)
 		# TODO: Change back to cuda
-		# self.ts_loss         = Loss().cuda()	
-		self.ts_loss         = Loss()
+		self.ts_loss         = Loss().cuda()	
+		# self.ts_loss         = Loss()
 		self.optim           = torch.optim.AdamW(self.parameters(), lr = args.lr)
 		self.scheduler       = torch.optim.lr_scheduler.StepLR(self.optim, step_size = args.test_step, gamma = args.lr_decay)
 		# print("Model para number = %.2f"%(sum(param.numel() for param in self.ts_vad.parameters()) / 1e6))
@@ -44,15 +44,15 @@ class trainer(nn.Module):
 		for num, (rs, ts, labels) in enumerate(args.trainLoader, start = 1):
 			self.zero_grad()
 			# TODO: Change back to cuda
-			# labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
-			labels  = torch.tensor(labels, dtype=torch.float32)	
+			labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
+			# labels  = torch.tensor(labels, dtype=torch.float32)	
 			with autocast():
 				# TODO: Change back to cuda
-				# rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
-				rs_embeds  = self.ts_vad.rs_forward(rs)
+				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
+				# rs_embeds  = self.ts_vad.rs_forward(rs)
 				# TODO: Change back to cuda
-				# ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
-				ts_embeds  = self.ts_vad.ts_forward(ts)
+				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
+				# ts_embeds  = self.ts_vad.ts_forward(ts)
 				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
 				loss, _    = self.ts_loss.forward(outs, labels)	
 			scaler.scale(loss).backward()
@@ -79,17 +79,17 @@ class trainer(nn.Module):
 		rttm = open(args.rttm_save_path, "w")		
 		for num, (rs, ts, labels, filename, speaker_id, start) in enumerate(args.evalLoader, start = 1):
 			# TODO: Change back to cuda
-			# labels  = torch.tensor(labels, dtype=torch.float32).cuda()
-			labels  = torch.tensor(labels, dtype=torch.float32)
+			labels  = torch.tensor(labels, dtype=torch.float32).cuda()
+			# labels  = torch.tensor(labels, dtype=torch.float32)
 			with torch.no_grad():		
 				# TODO: Change back to cuda
-				# rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
-				rs_embeds  = self.ts_vad.rs_forward(rs)
+				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
+				# rs_embeds  = self.ts_vad.rs_forward(rs)
 				# print(f"rs_embeding extracted")
 				
 				# TODO: Change back to cuda
-				# ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
-				ts_embeds  = self.ts_vad.ts_forward(ts)
+				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
+				# ts_embeds  = self.ts_vad.ts_forward(ts)
 				# print(f"ts_embeding extracted")
 
 				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
@@ -163,8 +163,8 @@ class trainer(nn.Module):
 	def load_parameters(self, path):
 		selfState = self.state_dict()
 		# TODO: Change back to cuda
-		# loadedState = torch.load(path)
-		loadedState = torch.load(path, map_location="cpu")
+		loadedState = torch.load(path)
+		# loadedState = torch.load(path, map_location="cpu")
 		for name, param in loadedState.items():
 			origName = name
 			if name not in selfState:
