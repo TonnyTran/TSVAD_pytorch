@@ -54,9 +54,13 @@ def remove_overlap(aa, bb):
 
 
 def init_speaker_encoder(source):
+	# TODO: change to cuda
 	speaker_encoder = ECAPA_TDNN(C=1024).cuda()
+	# speaker_encoder = ECAPA_TDNN(C=1024)
 	speaker_encoder.eval()
+	# TODO: change to cuda
 	loadedState = torch.load(source, map_location="cuda")
+	# loadedState = torch.load(source, map_location="cpu")
 	selfState = speaker_encoder.state_dict()
 	for name, param in loadedState.items():
 		if name in selfState:
@@ -68,14 +72,16 @@ def init_speaker_encoder(source):
 def extract_embeddings(batch, model):	
 	batch = torch.stack(batch)    
 	with torch.no_grad():
+		# TODO: change to cuda
 		embeddings = model.forward(batch.cuda())
+		# embeddings = model.forward(batch)
 	return embeddings
 
 def get_args():
 	parser = argparse.ArgumentParser(description='')
-	parser.add_argument('--data_path', help='the path for the dihard')
-	parser.add_argument('--type', help='dev or eval')
-	parser.add_argument('--source', help='the part for the speaker encoder')
+	parser.add_argument('--data_path', default='/home/users/ntu/tlkushag/scratch/data08/dihard', help='the path for the dihard')
+	parser.add_argument('--type', default='dev', help='dev or eval')
+	parser.add_argument('--source', default='/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting/pretrained_models/ecapa-tdnn.model', help='the part for the speaker encoder')
 	parser.add_argument('--length_embedding', type=float, default=6, help='length of embeddings, seconds')
 	parser.add_argument('--step_embedding', type=float, default=1, help='step of embeddings, seconds')
 	parser.add_argument('--batch_size', type=int, default=96, help='step of embeddings, seconds')
@@ -91,8 +97,14 @@ def get_args():
 
 def main():
 	args = get_args()
+	print('Arguments:')
+	for arg in vars(args):
+		print(arg + ':', getattr(args, arg))
+
 	text_grids = glob.glob(args.path_grid + '/*')
-	outs = open(args.out_text, "w")
+	outs = open(args.out_text, "w") #ts-dev.json
+
+	print("Processing textgrids")
 	for text_grid in tqdm.tqdm(text_grids):
 		tg = textgrid.TextGrid.fromFile(text_grid)
 		segments = []
@@ -115,7 +127,7 @@ def main():
 						)
 					)
 		segments = sorted(segments, key=lambda x: x.spkr)
-
+		
 		intervals = defaultdict(list)
 		new_intervals = defaultdict(list)
 
@@ -135,13 +147,16 @@ def main():
 			new_intervals[key] = new_interval
 
 		wav_file = glob.glob(os.path.join(args.path_wav, uttid) + '*.wav')[0]
-		orig_audio, _ = soundfile.read(wav_file)
+		orig_audio, _ = soundfile.read(wav_file,always_2d=True)
 		orig_audio = orig_audio[:,0]
 		length = len(orig_audio) 
 
 		# # Cut and save the clean speech part
 		id_full = wav_file.split('/')[-1][:-4]
-		room_id = id_full[:11]
+		if(args.type == 'dev'):
+			room_id = id_full[:11]
+		else:
+			room_id = id_full[:12]
 		for key in new_intervals:
 			output_dir = os.path.join(args.target_wav, id_full)
 			os.makedirs(output_dir, exist_ok = True)
@@ -168,6 +183,9 @@ def main():
 					labels[i] = 1
 
 			room_speaker_id = room_id + '_' + str(key)
+			if(room_speaker_id not in dic):
+				print("Error: ", room_speaker_id)
+				continue
 			speaker_id = dic[room_speaker_id]
 
 			res = {'filename':id_full, 'speaker_key':key, 'speaker_id': speaker_id, 'labels':labels}
@@ -175,27 +193,49 @@ def main():
 			outs.write('\n')
 
 	# Extract embeddings
+	print("Extracting embeddings")
+	files_with_zero_length = 0
+
 	files = sorted(glob.glob(args.target_wav + "/*/*.wav"))
 	model = init_speaker_encoder(args.source)
+
 	for file in tqdm.tqdm(files):
-		if 'all' not in file:
+		if 'all.wav' not in file:
 			batch = []
 			embeddings = []
-			wav_length = wave.open(file, 'rb').getnframes() # entire length for target speech
+			wav_length = wave.open(file, 'rb').getnframes() # entire length for target speech in frames which is seconds * 16000 * sampling rate				
+			print("File: ",file)
+			print("Wav length: ", wav_length)
+			if (wav_length - int(args.length_embedding * 16000)) <= 0:
+				# set embedding to torch.Size([96, 192])
+				files_with_zero_length += 1
+				embedding = torch.zeros((96, 192))
+				embeddings.extend(embedding)
+				embeddings = torch.stack(embeddings)
+				output_file = args.target_embedding + '/' + file.split('/')[-2] + '/' + file.split('/')[-1].replace('.wav', '.pt')
+				os.makedirs(os.path.dirname(output_file), exist_ok = True)
+				torch.save(embeddings, output_file)
+				continue
+
 			for start in range(0, wav_length - int(args.length_embedding * 16000), int(args.step_embedding * 16000)):
 				stop = start + int(args.length_embedding * 16000)
 				target_speech, _ = soundfile.read(file, start = start, stop = stop)
 				target_speech = torch.FloatTensor(numpy.array(target_speech))
 				batch.append(target_speech)
 				if len(batch) == args.batch_size:                
-					embeddings.extend(extract_embeddings(batch, model))
+					embedding = extract_embeddings(batch, model)
+					embeddings.extend(embedding)					
 					batch = []
+			
 			if len(batch) != 0:
-				embeddings.extend(extract_embeddings(batch, model))             
+				embeddings.extend(extract_embeddings(batch, model))   
+
 			embeddings = torch.stack(embeddings)
 			output_file = args.target_embedding + '/' + file.split('/')[-2] + '/' + file.split('/')[-1].replace('.wav', '.pt')
 			os.makedirs(os.path.dirname(output_file), exist_ok = True)
 			torch.save(embeddings, output_file)
+
+	print("Number of files with zero length: ", files_with_zero_length)
 
 if __name__ == '__main__':
 	main()

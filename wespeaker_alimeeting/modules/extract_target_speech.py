@@ -76,7 +76,7 @@ def main():
             new_intervals[key] = new_interval
 
         wav_file = glob.glob(os.path.join(args.orig_audio_path, room_id) + '*.wav')[0]
-        orig_audio, fs = soundfile.read(wav_file)
+        orig_audio, fs = soundfile.read(wav_file,always_2d=True)
         orig_audio = orig_audio[:,0]
 
         # # Cut and save the clean speech part

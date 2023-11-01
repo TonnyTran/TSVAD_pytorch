@@ -1,0 +1,80 @@
+[System initialization completed]
+[Loader initialization completed]
+
+########################### Parameters ###########################
+max_epoch 10
+warm_up_epoch 10
+batch_size 40
+rs_len 4.0
+n_cpu 4
+test_step 1
+lr 0.0001
+lr_decay 0.9
+test_shift 4.0
+min_silence 0.32
+min_speech 0.0
+threshold 0.5
+init_model 
+train_list /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data/ts_dev.json
+train_path /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data
+eval_list /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data/ts_eval.json
+eval_path /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data
+save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23
+musan_path /home/users/ntu/tlkushag/scratch/data08/Others/musan_split
+rir_path /home/users/ntu/tlkushag/scratch/data08/Others/RIRS_NOISES/simulated_rirs
+speech_encoder_pretrain /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/pretrained_models/WavLM-Base+.pt
+train True
+eval False
+score_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/score.txt
+model_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model
+rttm_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/res_rttm
+modelfiles []
+score_file <_io.TextIOWrapper name='/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/score.txt' mode='a+' encoding='UTF-8'>
+epoch 1
+trainLoader <torch.utils.data.dataloader.DataLoader object at 0x14720cf9d040>
+evalLoader <torch.utils.data.dataloader.DataLoader object at 0x14720cf44c40>
+########################### Parameters ###########################
+
+[1]
+DER 51.50%, MS 19.48%, FA 17.27%, SC 14.75%
+
+[2]
+DER 34.52%, MS 15.45%, FA 3.21%, SC 15.87%
+
+[3]
+DER 30.72%, MS 14.40%, FA 1.46%, SC 14.85%
+
+[4]
+DER 30.41%, MS 12.36%, FA 4.41%, SC 13.63%
+
+[5]
+DER 27.42%, MS 13.10%, FA 1.80%, SC 12.52%
+
+[6]
+DER 25.20%, MS 10.47%, FA 1.79%, SC 12.95%
+
+[7]
+DER 25.80%, MS 7.86%, FA 3.70%, SC 14.24%
+
+[8]
+DER 24.81%, MS 7.49%, FA 3.52%, SC 13.80%
+
+[9]
+DER 25.50%, MS 9.94%, FA 2.71%, SC 12.85%
+
+======================================================================================
+
+			Resource Usage on 2023-10-17 15:38:54.486429:
+
+	JobId: 3296967.pbs101  
+	Project: personal-tlkushag 
+	Exit Status: 0
+	NCPUs Requested: 1				NCPUs Used: 1
+							CPU Time Used: 01:27:58
+	Memory Requested: 100gb 			Memory Used: 22175932kb
+							Vmem Used: 160497316kb
+	Walltime requested: 10:00:00 			Walltime Used: 01:00:40
+	
+	Execution Nodes Used: (x1000c3s5b0n1:mem=104857600kb:ncpus=1:ngpus=4)
+	
+ ======================================================================================

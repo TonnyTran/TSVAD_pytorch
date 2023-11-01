@@ -1,17 +1,18 @@
-stage=5
-stop_stage=5
+stage=8
+stop_stage=8
 
 data_path=/home/users/ntu/tlkushag/scratch/data08/dihard
 eval_path=${data_path}/third_dihard_challenge_eval/data
 dev_path=${data_path}/third_dihard_challenge_dev/data
 audio_dir=${eval_path}/wav
+
 textgrid_dir=${eval_path}/textgrid
 
-target_audio_path=${pseudo_path}/target_audio
-eval_json=${eval_path}/ts_eval.json
-
 pseudo_path=${data_path}/pseudo
+target_audio_path=${pseudo_path}/target_audio
 target_embedding_path=${pseudo_path}/target_embedding
+
+eval_json=${eval_path}/ts_eval.json
 
 
 curr_path=/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting
@@ -84,7 +85,7 @@ fi
 
 if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then    
     echo "[6] Get DER result"
-    perl external_tools/SCTK-2.4.12/src/md-eval/md-eval.pl -c 0.25 -r exp/label/all.rttm -s exp/predict/res_rttm 
+    perl external_tools/SCTK-2.4.12/src/md-eval/md-eval.pl -c 0.0 -r exp/label/all.rttm -s exp/predict/res_rttm 
 fi
 
 if [ ${stage} -le 7 ] && [ ${stop_stage} -ge 7 ]; then

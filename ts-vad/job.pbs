@@ -5,5 +5,8 @@
 #PBS -l walltime=10:00:00
 #PBS -j oe
 #PBS -l mem=100gb
+
 source /home/users/ntu/tlkushag/anaconda3/bin/activate tsvad
+
+cd /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad
 /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/run_eval.sh

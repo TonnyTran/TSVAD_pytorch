@@ -41,6 +41,18 @@ def main():
 			batch = []
 			embeddings = []
 			wav_length = wave.open(file, 'rb').getnframes() # entire length for target speech
+			
+			if (wav_length - int(args.length_embedding * 16000)) <= 0:
+				# set embedding to torch.Size([96, 192])
+				# files_with_zero_length += 1
+				embedding = torch.zeros((96, 192))
+				embeddings.extend(embedding)
+				embeddings = torch.stack(embeddings)
+				output_file = args.target_embedding_path + '/' + file.split('/')[-2] + '/' + file.split('/')[-1].replace('.wav', '.pt')
+				os.makedirs(os.path.dirname(output_file), exist_ok = True)
+				torch.save(embeddings, output_file)
+				continue
+
 			for start in range(0, wav_length - int(args.length_embedding * 16000), int(args.step_embedding * 16000)):
 				stop = start + int(args.length_embedding * 16000)
 				target_speech, _ = soundfile.read(file, start = start, stop = stop)

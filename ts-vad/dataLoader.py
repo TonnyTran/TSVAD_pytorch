@@ -18,8 +18,8 @@ class train_loader(object):
 		augment_files   = glob.glob(os.path.join(musan_path,'*/*/*.wav'))
 		for file in augment_files:
 			if file.split('/')[-4] not in self.noiselist:
-				self.noiselist[file.split('/')[-4]] = []
-			self.noiselist[file.split('/')[-4]].append(file)
+				self.noiselist[file.split('/')[-3]] = []
+			self.noiselist[file.split('/')[-3]].append(file)
 		self.rir_files  = glob.glob(os.path.join(rir_path,'*/*/*.wav'))
 
 		self.train_path = train_path	
@@ -114,13 +114,14 @@ class train_loader(object):
 				candidate_speakers = [k for k in self.speaker_to_utt.keys() if k not in speakers_in_this_videos]
 				random_speaker = random.choice(candidate_speakers)
 				random_file = random.choice(self.speaker_to_utt[random_speaker])
-				# For DIHARD dataset where eval  format is DH_EVAL_0142_1 
+				# For DIHARD dataset where eval  format is DH_EVAL_0142_1 f
 				if('EVAL' in random_file):
-					path = self.eval_path + '/target_embedding/' + random_file[:12] + '/' + str(random_file.split('_')[-1]) + '.pt'
+					path = self.train_path+ '/target_embedding/' + random_file[:12] + '/' + str(random_file.split('_')[-1]) + '.pt'
 				if('DEV' in random_file):
-					path = self.eval_path + '/target_embedding/' + random_file[:11] + '/' + str(random_file.split('_')[-1]) + '.pt'
+					path = self.train_path+ '/target_embedding/' + random_file[:11] + '/' + str(random_file.split('_')[-1]) + '.pt'
 				# For Alimeeting dataset
 				# path = self.train_path + '/target_embedding/' + random_file[:17] + '/' + str(random_file.split('_')[-1]) + '.pt'
+
 			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = feature[random.randint(0,feature.shape[0]-1),:]
 			target_speeches.append(feature)
@@ -133,7 +134,7 @@ class train_loader(object):
 	def add_rev(self, audio, length):
 		rir_file    = random.choice(self.rir_files)
 		rir, _     = soundfile.read(rir_file)
-		rir         = numpy.expand_dims(rir.astype(numpy.float),0)
+		rir         = numpy.expand_dims(rir.astype(float),0)
 		rir         = rir / numpy.sqrt(numpy.sum(rir**2))
 		return signal.convolve(audio, rir, mode='full')[:,:length]
 

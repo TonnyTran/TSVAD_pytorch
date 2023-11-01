@@ -64,6 +64,9 @@ def main():
                     intervals_by_speaker[speaker_id] = []
                 intervals_by_speaker[speaker_id].append((start_time, end_time, text))
 
+            # Sort intervals_by_speaker in descending order of the total time of intervals
+            intervals_by_speaker = dict(sorted(intervals_by_speaker.items(), key=lambda x: sum([interval[1]-interval[0] for interval in x[1]]), reverse=True))
+
             # Write IntervalTier entries for each speaker
             for speaker_id, intervals in intervals_by_speaker.items():
                 # Write IntervalTier header

@@ -1,0 +1,17 @@
+[2] VAD
+======================================================================================
+
+			Resource Usage on 2023-10-24 16:16:37.997199:
+
+	JobId: 3797230.pbs101  
+	Project: personal-tlkushag 
+	Exit Status: 0
+	NCPUs Requested: 1				NCPUs Used: 1
+							CPU Time Used: 00:50:43
+	Memory Requested: 100gb 			Memory Used: 17935792kb
+							Vmem Used: 2565790908kb
+	Walltime requested: 10:00:00 			Walltime Used: 00:26:34
+	
+	Execution Nodes Used: (x1000c3s0b0n0:mem=104857600kb:ncpus=1:ngpus=4)
+	
+ ======================================================================================

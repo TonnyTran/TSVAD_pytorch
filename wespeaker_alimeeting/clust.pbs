@@ -6,4 +6,5 @@
 #PBS -j oe
 #PBS -l mem=100gb
 source /home/users/ntu/tlkushag/anaconda3/bin/activate tsvad
+cd /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting/
 /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting/run.sh

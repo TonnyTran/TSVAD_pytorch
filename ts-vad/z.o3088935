@@ -1,52 +1,0 @@
-[System initialization completed]
-Model /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/pretrained_models/ts-vad.model loaded from pretrain!
-[Trainer initialization completed]
-[Loader initialization completed]
-### Parameters ###
-max_epoch 10
-warm_up_epoch 5
-batch_size 10
-rs_len 4.0
-n_cpu 4
-test_step 1
-lr 0.0001
-lr_decay 0.9
-test_shift 0.5
-min_silence 0.32
-min_speech 0.0
-threshold 0.5
-init_model /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/pretrained_models/ts-vad.model
-train_list /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data/ts_dev.json
-train_path /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data
-eval_list /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data/ts_eval.json
-eval_path /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data
-save_path exps/res23
-musan_path /home/users/ntu/tlkushag/scratch/data08/Others/musan_split
-rir_path /home/users/ntu/tlkushag/scratch/data08/Others/RIRS_NOISES/simulated_rirs
-speech_encoder_pretrain /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/pretrained_models/WavLM-Base+.pt
-train False
-eval True
-score_save_path exps/res23/score.txt
-model_save_path exps/res23/model
-rttm_save_path exps/res23/res_rttm
-modelfiles []
-score_file <_io.TextIOWrapper name='exps/res23/score.txt' mode='a+' encoding='UTF-8'>
-epoch 1
-trainLoader <torch.utils.data.dataloader.DataLoader object at 0x145826aeb9a0>
-evalLoader <torch.utils.data.dataloader.DataLoader object at 0x145826b3bd30>
-Eval: [ 1] 0.00% (est 3290.8 mins) Loss: 2.46978Eval: [ 1] 0.01% (est 2720.9 mins) Loss: 2.49319Eval: [ 1] 0.01% (est 2541.5 mins) Loss: 2.45074Eval: [ 1] 0.02% (est 2439.4 mins) Loss: 2.39988Eval: [ 1] 0.02% (est 2375.2 mins) Loss: 2.33224Eval: [ 1] 0.02% (est 2327.7 mins) Loss: 2.18043Eval: [ 1] 0.03% (est 2293.1 mins) Loss: 2.17173Eval: [ 1] 0.03% (est 2268.5 mins) Loss: 2.21860Eval: [ 1] 0.04% (est 2251.3 mins) Loss: 2.23939Eval: [ 1] 0.04% (est 2234.9 mins) Loss: 2.20624Eval: [ 1] 0.04% (est 2221.6 mins) Loss: 2.22060Eval: [ 1] 0.05% (est 2211.5 mins) Loss: 2.21312Eval: [ 1] 0.05% (est 2204.3 mins) Loss: 2.23570Eval: [ 1] 0.06% (est 2195.4 mins) Loss: 2.21582Eval: [ 1] 0.06% (est 2192.0 mins) Loss: 2.22958Eval: [ 1] 0.07% (est 2185.3 mins) Loss: 2.24034Eval: [ 1] 0.07% (est 2181.2 mins) Loss: 2.26238Eval: [ 1] 0.07% (est 2176.9 mins) Loss: 2.27582Eval: [ 1] 0.08% (est 2171.8 mins) Loss: 2.25949Eval: [ 1] 0.08% (est 2167.4 mins) Loss: 2.27920Eval: [ 1] 0.09% (est 2165.1 mins) Loss: 2.29045Eval: [ 1] 0.09% (est 2161.3 mins) Loss: 2.31897Eval: [ 1] 0.09% (est 2157.7 mins) Loss: 2.31964Eval: [ 1] 0.10% (est 2155.1 mins) Loss: 2.34147Eval: [ 1] 0.10% (est 2153.2 mins) Loss: 2.36277Eval: [ 1] 0.11% (est 2151.6 mins) Loss: 2.33151Eval: [ 1] 0.11% (est 2149.1 mins) Loss: 2.33706Eval: [ 1] 0.11% (est 2146.5 mins) Loss: 2.33897Eval: [ 1] 0.12% (est 2145.1 mins) Loss: 2.32891Eval: [ 1] 0.12% (est 2144.0 mins) Loss: 2.32318Eval: [ 1] 0.13% (est 2142.0 mins) Loss: 2.29442Eval: [ 1] 0.13% (est 2139.9 mins) Loss: 2.28346Eval: [ 1] 0.13% (est 2138.7 mins) Loss: 2.27399Eval: [ 1] 0.14% (est 2137.1 mins) Loss: 2.26365Eval: [ 1] 0.14% (est 2135.5 mins) Loss: 2.26513Eval: [ 1] 0.15% (est 2134.1 mins) Loss: 2.27959Eval: [ 1] 0.15% (est 2132.6 mins) Loss: 2.26627Eval: [ 1] 0.15% (est 2131.4 mins) Loss: 2.27118Eval: [ 1] 0.16% (est 2130.0 mins) Loss: 2.26276Eval: [ 1] 0.16% (est 2128.7 mins) Loss: 2.26435Eval: [ 1] 0.17% (est 2129.3 mins) Loss: 2.27361Eval: [ 1] 0.17% (est 2129.3 mins) Loss: 2.27478Eval: [ 1] 0.18% (est 2128.3 mins) Loss: 2.27707Eval: [ 1] 0.18% (est 2127.2 mins) Loss: 2.28168Eval: [ 1] 0.18% (est 2126.7 mins) Loss: 2.27849Eval: [ 1] 0.19% (est 2127.3 mins) Loss: 2.27692Eval: [ 1] 0.19% (est 2126.3 mins) Loss: 2.26270Eval: [ 1] 0.20% (est 2127.1 mins) Loss: 2.26614Eval: [ 1] 0.20% (est 2126.8 mins) Loss: 2.24975Eval: [ 1] 0.20% (est 2127.3 mins) Loss: 2.24282Eval: [ 1] 0.21% (est 2126.3 mins) Loss: 2.23289Eval: [ 1] 0.21% (est 2125.9 mins) Loss: 2.22966Eval: [ 1] 0.22% (est 2125.6 mins) Loss: 2.22196Eval: [ 1] 0.22% (est 2124.8 mins) Loss: 2.22437Eval: [ 1] 0.22% (est 2124.0 mins) Loss: 2.22460Eval: [ 1] 0.23% (est 2123.3 mins) Loss: 2.22190Eval: [ 1] 0.23% (est 2123.1 mins) Loss: 2.22093Eval: [ 1] 0.24% (est 2122.5 mins) Loss: 2.21310Eval: [ 1] 0.24% (est 2121.9 mins) Loss: 2.21044Eval: [ 1] 0.24% (est 2121.2 mins) Loss: 2.21398Eval: [ 1] 0.25% (est 2120.8 mins) Loss: 2.21138Eval: [ 1] 0.25% (est 2120.4 mins) Loss: 2.21889Eval: [ 1] 0.26% (est 2119.8 mins) Loss: 2.21811Eval: [ 1] 0.26% (est 2119.6 mins) Loss: 2.21216Eval: [ 1] 0.26% (est 2119.2 mins) Loss: 2.20994Eval: [ 1] 0.27% (est 2118.6 mins) Loss: 2.20605Eval: [ 1] 0.27% (est 2118.2 mins) Loss: 2.20631Eval: [ 1] 0.28% (est 2117.7 mins) Loss: 2.21699Eval: [ 1] 0.28% (est 2117.4 mins) Loss: 2.21660Eval: [ 1] 0.29% (est 2116.8 mins) Loss: 2.22838Eval: [ 1] 0.29% (est 2116.4 mins) Loss: 2.23073Eval: [ 1] 0.29% (est 2115.9 mins) Loss: 2.22569Eval: [ 1] 0.30% (est 2115.6 mins) Loss: 2.23473Eval: [ 1] 0.30% (est 2115.1 mins) Loss: 2.23256Eval: [ 1] 0.31% (est 2114.7 mins) Loss: 2.23647Eval: [ 1] 0.31% (est 2114.9 mins) Loss: 2.23859Eval: [ 1] 0.31% (est 2114.5 mins) Loss: 2.24255Eval: [ 1] 0.32% (est 2114.0 mins) Loss: 2.24463Eval: [ 1] 0.32% (est 2113.6 mins) Loss: 2.24842Eval: [ 1] 0.33% (est 2113.4 mins) Loss: 2.24872Eval: [ 1] 0.33% (est 2113.2 mins) Loss: 2.24463Eval: [ 1] 0.33% (est 2112.8 mins) Loss: 2.24344Eval: [ 1] 0.34% (est 2112.4 mins) Loss: 2.24001Eval: [ 1] 0.34% (est 2112.3 mins) Loss: 2.23522Eval: [ 1] 0.35% (est 2112.4 mins) Loss: 2.23767Eval: [ 1] 0.35% (est 2112.0 mins) Loss: 2.23836Eval: [ 1] 0.35% (est 2111.6 mins) Loss: 2.23847Eval: [ 1] 0.36% (est 2111.7 mins) Loss: 2.24132Eval: [ 1] 0.36% (est 2111.4 mins) Loss: 2.24092Eval: [ 1] 0.37% (est 2111.0 mins) Loss: 2.24116Eval: [ 1] 0.37% (est 2110.6 mins) Loss: 2.24419======================================================================================
-
-			Resource Usage on 2023-10-14 01:40:49.159585:
-
-	JobId: 3088935.pbs101  
-	Project: personal-tlkushag 
-	Exit Status: 271
-	NCPUs Requested: 1				NCPUs Used: 1
-							CPU Time Used: 00:06:43
-	Memory Requested: 100gb 			Memory Used: 4268396kb
-							Vmem Used: 18582772kb
-	Walltime requested: 10:00:00 			Walltime Used: 00:08:53
-	
-	Execution Nodes Used: (x1000c2s4b0n0:mem=104857600kb:ncpus=1:ngpus=4)
-	
- ======================================================================================

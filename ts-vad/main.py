@@ -23,7 +23,9 @@ parser.add_argument('--test_shift', type=float, default=16,      help='Input shi
 parser.add_argument('--min_silence', type=float, default=0.32,      help='Remove the speech with short slience during testing')
 parser.add_argument('--min_speech', type=float, default=0.00,      help='Combine the short speech during testing')
 parser.add_argument('--threshold', type=float, default=0.50,      help='The threshold during testing')
-parser.add_argument('--init_model',  type=str,   default="/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/pretrained_models/ts-vad.model",  help='Init TS-VAD model from pretrain')
+# parser.add_argument('--init_model',  type=str,   default="/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/pretrained_models/ts-vad.model",  help='Init TS-VAD model from pretrain')
+parser.add_argument('--init_model',  type=str,   default="/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/oracle_FATSVAD/model_0024.model",  help='Init TS-VAD model from pretrain')
+# parser.add_argument('--init_model',  type=str,   default="",  help='Init TS-VAD model from pretrain')
 
 ### Data path
 parser.add_argument('--train_list', type=str,   default="/home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data/ts_dev.json",     help='The path of the training list')
@@ -50,18 +52,19 @@ args = init_loader(args)
 print(f"[Loader initialization completed]")
 
 # print args
-print("\n### Parameters ###")
+print("\n--------------------------- Parameters ---------------------------")
 for arg in vars(args):
 	print(arg, getattr(args, arg))
-print("### Parameters ###\n")
+print("--------------------------- Parameters ---------------------------\n")
 
-args.eval=True
+# args.eval=True
 ## Evaluate only
 if args.eval == True:
 	s.eval_network(args)
 	quit()
 
 ## Training
+# args.train = True
 if args.train == True:
 	while args.epoch < args.max_epoch:
 		for param in s.ts_vad.speech_encoder.parameters():
@@ -70,6 +73,8 @@ if args.train == True:
 			else:
 				param.requires_grad = True
 		args = init_loader(args) # Random the training list for more samples
+		# print(f"EPOCH: {args.epoch}")
+		print("---------- EPOCH: ", args.epoch, "----------")
 		s.train_network(args)
 		if args.epoch % args.test_step == 0:
 			s.save_parameters(args.model_save_path + "/model_%04d.model"%args.epoch)

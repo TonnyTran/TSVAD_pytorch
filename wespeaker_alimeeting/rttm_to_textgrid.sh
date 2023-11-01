@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define paths
-rttm_dir="/home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data/rttm"      # Replace with the path to your RTTM files
-output_textgrid_dir="/home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data/textgrid"  # Replace with the path for TextGrid output
+rttm_dir="/home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data/rttm"      # Replace with the path to your RTTM files
+output_textgrid_dir="/home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data/textgrid"  # Replace with the path for TextGrid output
 curr_path="/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting"
 # Create the output directory if it doesn't exist
 mkdir -p "$output_textgrid_dir"

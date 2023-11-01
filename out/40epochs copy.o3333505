@@ -1,0 +1,113 @@
+[System initialization completed]
+Model /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0019.model loaded from previous state!
+[Loader initialization completed]
+
+--------------------------- Parameters ---------------------------
+max_epoch 40
+warm_up_epoch 10
+batch_size 40
+rs_len 4.0
+n_cpu 4
+test_step 1
+lr 0.0001
+lr_decay 0.9
+test_shift 4.0
+min_silence 0.32
+min_speech 0.0
+threshold 0.5
+init_model 
+train_list /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data/ts_dev.json
+train_path /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data
+eval_list /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data/ts_eval.json
+eval_path /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data
+save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23
+musan_path /home/users/ntu/tlkushag/scratch/data08/Others/musan_split
+rir_path /home/users/ntu/tlkushag/scratch/data08/Others/RIRS_NOISES/simulated_rirs
+speech_encoder_pretrain /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/pretrained_models/WavLM-Base+.pt
+train True
+eval False
+score_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/score.txt
+model_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model
+rttm_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/res_rttm
+modelfiles ['/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0001.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0002.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0003.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0004.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0005.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0006.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0007.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0008.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0009.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0010.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0011.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0012.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0013.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0014.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0015.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0016.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0017.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0018.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0019.model']
+score_file <_io.TextIOWrapper name='/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/score.txt' mode='a+' encoding='UTF-8'>
+epoch 20
+trainLoader <torch.utils.data.dataloader.DataLoader object at 0x1470eaac18e0>
+evalLoader <torch.utils.data.dataloader.DataLoader object at 0x1470e345eb20>
+--------------------------- Parameters ---------------------------
+[20]
+DER 19.81%, MS 8.63%, FA 1.78%, SC 9.40%
+
+[21]
+DER 19.84%, MS 7.82%, FA 2.04%, SC 9.99%
+
+[22]
+DER 19.25%, MS 7.86%, FA 1.89%, SC 9.49%
+
+[23]
+DER 19.00%, MS 7.41%, FA 2.19%, SC 9.41%
+
+[24]
+DER 19.22%, MS 8.59%, FA 1.69%, SC 8.94%
+
+[25]
+DER 18.91%, MS 7.89%, FA 1.52%, SC 9.51%
+
+[26]
+DER 19.37%, MS 6.82%, FA 2.81%, SC 9.73%
+
+[27]
+DER 18.83%, MS 7.03%, FA 2.03%, SC 9.78%
+
+[28]
+DER 18.94%, MS 7.29%, FA 2.01%, SC 9.63%
+
+[29]
+DER 19.07%, MS 7.64%, FA 1.99%, SC 9.44%
+
+[30]
+DER 19.23%, MS 8.15%, FA 1.86%, SC 9.23%
+
+[31]
+DER 18.77%, MS 7.97%, FA 1.62%, SC 9.18%
+
+[32]
+DER 18.82%, MS 7.70%, FA 1.69%, SC 9.43%
+
+[33]
+DER 18.97%, MS 7.24%, FA 1.94%, SC 9.79%
+
+[34]
+DER 19.29%, MS 7.78%, FA 1.90%, SC 9.61%
+
+[35]
+DER 19.03%, MS 7.37%, FA 1.99%, SC 9.68%
+
+[36]
+DER 18.99%, MS 7.94%, FA 1.81%, SC 9.25%
+
+[37]
+DER 19.14%, MS 7.62%, FA 2.03%, SC 9.48%
+
+[38]
+DER 19.20%, MS 8.14%, FA 1.74%, SC 9.31%
+
+[39]
+DER 19.14%, MS 7.15%, FA 2.36%, SC 9.63%
+
+======================================================================================
+
+			Resource Usage on 2023-10-17 19:53:03.538016:
+
+	JobId: 3333505.pbs101  
+	Project: personal-tlkushag 
+	Exit Status: 0
+	NCPUs Requested: 1				NCPUs Used: 1
+							CPU Time Used: 03:31:40
+	Memory Requested: 100gb 			Memory Used: 22427484kb
+							Vmem Used: 190169564kb
+	Walltime requested: 10:00:00 			Walltime Used: 02:21:27
+	
+	Execution Nodes Used: (x1000c3s4b0n1:mem=104857600kb:ncpus=1:ngpus=4)
+	
+ ======================================================================================

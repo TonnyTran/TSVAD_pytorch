@@ -1,0 +1,84 @@
+[System initialization completed]
+Model /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0009.model loaded from previous state!
+[Loader initialization completed]
+
+--------------------------- Parameters ---------------------------
+max_epoch 20
+warm_up_epoch 10
+batch_size 40
+rs_len 4.0
+n_cpu 4
+test_step 1
+lr 0.0001
+lr_decay 0.9
+test_shift 4.0
+min_silence 0.32
+min_speech 0.0
+threshold 0.5
+init_model 
+train_list /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data/ts_dev.json
+train_path /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_dev/data
+eval_list /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data/ts_eval.json
+eval_path /home/users/ntu/tlkushag/scratch/data08/dihard/third_dihard_challenge_eval/data
+save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23
+musan_path /home/users/ntu/tlkushag/scratch/data08/Others/musan_split
+rir_path /home/users/ntu/tlkushag/scratch/data08/Others/RIRS_NOISES/simulated_rirs
+speech_encoder_pretrain /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/pretrained_models/WavLM-Base+.pt
+train True
+eval False
+score_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/score.txt
+model_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model
+rttm_save_path /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/res_rttm
+modelfiles ['/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0001.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0002.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0003.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0004.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0005.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0006.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0007.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0008.model', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/model_0009.model']
+score_file <_io.TextIOWrapper name='/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/score.txt' mode='a+' encoding='UTF-8'>
+epoch 10
+trainLoader <torch.utils.data.dataloader.DataLoader object at 0x14f9464929d0>
+evalLoader <torch.utils.data.dataloader.DataLoader object at 0x14f92ee20b50>
+--------------------------- Parameters ---------------------------
+
+[10]
+DER 22.93%, MS 7.35%, FA 3.22%, SC 12.36%
+
+[11]
+DER 21.16%, MS 9.14%, FA 1.22%, SC 10.80%
+
+[12]
+DER 21.13%, MS 7.52%, FA 1.82%, SC 11.78%
+
+[13]
+DER 20.34%, MS 8.37%, FA 1.59%, SC 10.38%
+
+[14]
+DER 20.50%, MS 6.70%, FA 2.87%, SC 10.94%
+
+[15]
+DER 20.49%, MS 7.88%, FA 1.89%, SC 10.72%
+
+[16]
+DER 20.34%, MS 8.35%, FA 2.08%, SC 9.91%
+
+[17]
+DER 20.24%, MS 8.38%, FA 1.69%, SC 10.17%
+
+[18]
+DER 20.06%, MS 8.03%, FA 2.06%, SC 9.98%
+
+[19]
+DER 19.62%, MS 7.35%, FA 2.11%, SC 10.17%
+
+======================================================================================
+
+			Resource Usage on 2023-10-17 17:10:54.131274:
+
+	JobId: 3313891.pbs101  
+	Project: personal-tlkushag 
+	Exit Status: 0
+	NCPUs Requested: 1				NCPUs Used: 1
+							CPU Time Used: 01:45:49
+	Memory Requested: 100gb 			Memory Used: 13006840kb
+							Vmem Used: 191969976kb
+	Walltime requested: 10:00:00 			Walltime Used: 01:12:13
+	
+	Execution Nodes Used: (x1000c3s5b0n1:mem=104857600kb:ncpus=1:ngpus=4)
+	
+ ======================================================================================

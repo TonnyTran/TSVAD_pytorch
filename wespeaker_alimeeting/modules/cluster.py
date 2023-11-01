@@ -152,8 +152,16 @@ def compute_embeddings(scp, segments, source,
 	utt_to_segments = read_segments(segments)
 
 	model = init_speaker_encoder(source)
-	room_id_dic = {'R8009_M8018_MS809': 2, 'R8009_M8019_MS810': 2, 'R8008_M8013_MS807': 3, 'R8009_M8020_MS810': 2, \
-					'R8007_M8010_MS803': 4, 'R8007_M8011_MS806': 4, 'R8003_M8001_MS801': 4, 'R8001_M8004_MS801': 4}
+	# room_id_dic = {'R8009_M8018_MS809': 2, 'R8009_M8019_MS810': 2, 'R8008_M8013_MS807': 3, 'R8009_M8020_MS810': 2, \
+					# 'R8007_M8010_MS803': 4, 'R8007_M8011_MS806': 4, 'R8003_M8001_MS801': 4, 'R8001_M8004_MS801': 4}
+	
+	room_id_dic = {}
+	# TODO: change the path to your own path
+	reco2num_spk_path = "/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting/data/dihard3_eval/reco2num_spk"
+	for line in open(reco2num_spk_path, 'r'):
+			reco, num_spk = line.strip().split()
+			room_id_dic[reco] = int(num_spk)
+
 	num_speaker_list = []
 	for utt in tqdm(utt_to_wav.keys()):
 		# Per utterance processing
@@ -178,7 +186,7 @@ def compute_embeddings(scp, segments, source,
 	return subsegs_list, embeddings_list, num_speaker_list
 
 
-def cluster(embeddings, num_spks, p=.01, min_num_spks=2, max_num_spks=4):
+def cluster(embeddings, num_spks, p=.01, min_num_spks=1, max_num_spks=7):
 	# Define utility functions
 	def cosine_similarity(M):
 		M = M / np.linalg.norm(M, axis=1, keepdims=True)

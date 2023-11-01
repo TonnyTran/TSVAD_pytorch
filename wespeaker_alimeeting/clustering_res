@@ -1,0 +1,18 @@
+(tsvad) [tlkushag@asp2a-login-nscc01 wespeaker_alimeeting]$ ./run.sh 
+[4] Get RTTM
+[5] Get labels
+[6] Get DER result
+Collar value 0.25
+14.93/7.22/2.14/5.58
+
+TSVAD
+[39]
+Kush min_segment_size = 6 sec - DER 19.14%, MS 7.15%, FA 2.36%, SC 9.63%
+Adnan min_segment_size = 7 sec - DER 14.25%, 
+
+(tsvad) [tlkushag@asp2a-login-nscc01 wespeaker_alimeeting]$ ./run.sh 
+[4] Get RTTM
+[5] Get labels
+[6] Get DER result
+Collar value 0.0
+30.69/12.63/9.90/8.16

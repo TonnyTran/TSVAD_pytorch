@@ -15,4 +15,4 @@ python ${curr_path}/main.py \
 --threshold 0.50 \
 --n_cpu 4 \
 --eval \
---init_model ${curr_path}/pretrained_models/ts-vad.model \
+--init_model /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/exps/res23/model/clust/model_0024.model \

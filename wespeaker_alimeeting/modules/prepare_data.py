@@ -18,7 +18,7 @@ class Segment(object):
 		self.etime = time
 
 def remove_overlap(aa, bb):
-	# Sort the intervals in both lists based on their start time
+	# Sort the intervals in both lists based on th eir start time
 	a = aa.copy()
 	b = bb.copy()
 	a.sort()
@@ -101,96 +101,96 @@ def main():
 	for arg in vars(args):
 		print(arg + ':', getattr(args, arg))
 
-	# text_grids = glob.glob(args.path_grid + '/*')
-	# outs = open(args.out_text, "w") #ts-dev.json
+	text_grids = glob.glob(args.path_grid + '/*')
+	outs = open(args.out_text, "w") #ts-dev.json
 
-	# print("Processing textgrids")
-	# for text_grid in tqdm.tqdm(text_grids):
-	# 	tg = textgrid.TextGrid.fromFile(text_grid)
-	# 	segments = []
-	# 	spk = {}
-	# 	num_spk = 1
-	# 	uttid = text_grid.split('/')[-1][:-9]
-	# 	for i in range(tg.__len__()):
-	# 		for j in range(tg[i].__len__()):
-	# 			if tg[i][j].mark:
-	# 				if tg[i].name not in spk:
-	# 					spk[tg[i].name] = num_spk
-	# 					num_spk += 1
-	# 				segments.append(Segment(
-	# 						uttid,
-	# 						spk[tg[i].name],
-	# 						tg[i][j].minTime,
-	# 						tg[i][j].maxTime,
-	# 						tg[i][j].mark.strip(),
-	# 						tg[i].name
-	# 					)
-	# 				)
-	# 	segments = sorted(segments, key=lambda x: x.spkr)
+	print("Processing textgrids")
+	for text_grid in tqdm.tqdm(text_grids):
+		tg = textgrid.TextGrid.fromFile(text_grid)
+		segments = []
+		spk = {}
+		num_spk = 1
+		uttid = text_grid.split('/')[-1][:-9]
+		for i in range(tg.__len__()):
+			for j in range(tg[i].__len__()):
+				if tg[i][j].mark:
+					if tg[i].name not in spk:
+						spk[tg[i].name] = num_spk
+						num_spk += 1
+					segments.append(Segment(
+							uttid,
+							spk[tg[i].name],
+							tg[i][j].minTime,
+							tg[i][j].maxTime,
+							tg[i][j].mark.strip(),
+							tg[i].name
+						)
+					)
+		segments = sorted(segments, key=lambda x: x.spkr)
 		
-	# 	intervals = defaultdict(list)
-	# 	new_intervals = defaultdict(list)
+		intervals = defaultdict(list)
+		new_intervals = defaultdict(list)
 
-	# 	dic = defaultdict()
-	# 	# Summary the intervals for all speakers
-	# 	for i in range(len(segments)):
-	# 		interval = [segments[i].stime, segments[i].etime]
-	# 		intervals[segments[i].spkr].append(interval)
-	# 		dic[str(segments[i].uttid) + '_' + str(segments[i].spkr)] = segments[i].name.split('_')[-1]
+		dic = defaultdict()
+		# Summary the intervals for all speakers
+		for i in range(len(segments)):
+			interval = [segments[i].stime, segments[i].etime]
+			intervals[segments[i].spkr].append(interval)
+			dic[str(segments[i].uttid) + '_' + str(segments[i].spkr)] = segments[i].name.split('_')[-1]
 
-	# 	# Remove the overlapped speeech    
-	# 	for key in intervals:
-	# 		new_interval = intervals[key]
-	# 		for o_key in intervals:
-	# 			if o_key != key:                
-	# 				new_interval = remove_overlap(copy.deepcopy(new_interval), copy.deepcopy(intervals[o_key]))
-	# 		new_intervals[key] = new_interval
+		# Remove the overlapped speeech    
+		for key in intervals:
+			new_interval = intervals[key]
+			for o_key in intervals:
+				if o_key != key:                
+					new_interval = remove_overlap(copy.deepcopy(new_interval), copy.deepcopy(intervals[o_key]))
+			new_intervals[key] = new_interval
 
-	# 	wav_file = glob.glob(os.path.join(args.path_wav, uttid) + '*.wav')[0]
-	# 	orig_audio, _ = soundfile.read(wav_file,always_2d=True)
-	# 	orig_audio = orig_audio[:,0]
-	# 	length = len(orig_audio) 
+		wav_file = glob.glob(os.path.join(args.path_wav, uttid) + '*.wav')[0]
+		orig_audio, _ = soundfile.read(wav_file,always_2d=True)
+		orig_audio = orig_audio[:,0]
+		length = len(orig_audio) 
 
-	# 	# # Cut and save the clean speech part
-	# 	id_full = wav_file.split('/')[-1][:-4]
-	# 	if(args.type == 'dev'):
-	# 		room_id = id_full[:11]
-	# 	else:
-	# 		room_id = id_full[:12]
-	# 	for key in new_intervals:
-	# 		output_dir = os.path.join(args.target_wav, id_full)
-	# 		os.makedirs(output_dir, exist_ok = True)
-	# 		output_wav = os.path.join(output_dir, str(key) + '.wav')
-	# 		new_audio = []
-	# 		labels = [0] * int(length / 16000 * 25) # 40ms, one label        
-	# 		for interval in new_intervals[key]:
-	# 			s, e = interval
-	# 			for i in range(int(s * 25), min(int(e * 25) + 1, len(labels))):
-	# 				labels[i] = 1 
-	# 			s *= 16000
-	# 			e *= 16000
-	# 			new_audio.extend(orig_audio[int(s):int(e)])
-	# 		soundfile.write(output_wav, new_audio, 16000)
-	# 	output_wav = os.path.join(output_dir, 'all.wav')
-	# 	soundfile.write(output_wav, orig_audio, 16000)
+		# # Cut and save the clean speech part
+		id_full = wav_file.split('/')[-1][:-4]
+		if(args.type == 'dev'):
+			room_id = id_full[:11]
+		else:
+			room_id = id_full[:12]
+		for key in new_intervals:
+			output_dir = os.path.join(args.target_wav, id_full)
+			os.makedirs(output_dir, exist_ok = True)
+			output_wav = os.path.join(output_dir, str(key) + '.wav')
+			new_audio = []
+			labels = [0] * int(length / 16000 * 25) # 40ms, one label        
+			for interval in new_intervals[key]:
+				s, e = interval
+				for i in range(int(s * 25), min(int(e * 25) + 1, len(labels))):
+					labels[i] = 1 
+				s *= 16000
+				e *= 16000
+				new_audio.extend(orig_audio[int(s):int(e)])
+			soundfile.write(output_wav, new_audio, 16000)
+		output_wav = os.path.join(output_dir, 'all.wav')
+		soundfile.write(output_wav, orig_audio, 16000)
 
-	# 	# Save the labels
-	# 	for key in intervals:
-	# 		labels = [0] * int(length / 16000 * 25) # 40ms, one label        
-	# 		for interval in intervals[key]:
-	# 			s, e = interval
-	# 			for i in range(int(s * 25), min(int(e * 25) + 1, len(labels))):
-	# 				labels[i] = 1
+		# Save the labels
+		for key in intervals:
+			labels = [0] * int(length / 16000 * 25) # 40ms, one label        
+			for interval in intervals[key]:
+				s, e = interval
+				for i in range(int(s * 25), min(int(e * 25) + 1, len(labels))):
+					labels[i] = 1
 
-	# 		room_speaker_id = room_id + '_' + str(key)
-	# 		if(room_speaker_id not in dic):
-	# 			print("Error: ", room_speaker_id)
-	# 			continue
-	# 		speaker_id = dic[room_speaker_id]
+			room_speaker_id = room_id + '_' + str(key)
+			if(room_speaker_id not in dic):
+				print("Error: ", room_speaker_id)
+				continue
+			speaker_id = dic[room_speaker_id]
 
-	# 		res = {'filename':id_full, 'speaker_key':key, 'speaker_id': speaker_id, 'labels':labels}
-	# 		json.dump(res, outs)
-	# 		outs.write('\n')
+			res = {'filename':id_full, 'speaker_key':key, 'speaker_id': speaker_id, 'labels':labels}
+			json.dump(res, outs)
+			outs.write('\n')
 
 	# Extract embeddings
 	print("Extracting embeddings")
@@ -204,8 +204,8 @@ def main():
 			batch = []
 			embeddings = []
 			wav_length = wave.open(file, 'rb').getnframes() # entire length for target speech in frames which is seconds * 16000 * sampling rate				
-			print("File: ",file)
-			print("Wav length: ", wav_length)
+			# print("File: ",file)
+			# print("Wav length: ", wav_length)
 			if (wav_length - int(args.length_embedding * 16000)) <= 0:
 				# set embedding to torch.Size([96, 192])
 				files_with_zero_length += 1

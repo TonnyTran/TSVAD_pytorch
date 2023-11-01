@@ -24,11 +24,11 @@ class trainer(nn.Module):
 	def __init__(self, args):
 		super(trainer, self).__init__()
 		# TODO: Change back to cuda
-		self.ts_vad          = TS_VAD(args).cuda()
-		# self.ts_vad          = TS_VAD(args)
+		# self.ts_vad          = TS_VAD(args).cuda()
+		self.ts_vad          = TS_VAD(args)
 		# TODO: Change back to cuda
-		self.ts_loss         = Loss().cuda()	
-		# self.ts_loss         = Loss()
+		# self.ts_loss         = Loss().cuda()	
+		self.ts_loss         = Loss()
 		self.optim           = torch.optim.AdamW(self.parameters(), lr = args.lr)
 		self.scheduler       = torch.optim.lr_scheduler.StepLR(self.optim, step_size = args.test_step, gamma = args.lr_decay)
 		# print("Model para number = %.2f"%(sum(param.numel() for param in self.ts_vad.parameters()) / 1e6))
@@ -44,15 +44,15 @@ class trainer(nn.Module):
 		for num, (rs, ts, labels) in enumerate(args.trainLoader, start = 1):
 			self.zero_grad()
 			# TODO: Change back to cuda
-			labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
-			# labels  = torch.tensor(labels, dtype=torch.float32)	
+			# labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
+			labels  = torch.tensor(labels, dtype=torch.float32)	
 			with autocast():
 				# TODO: Change back to cuda
-				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
-				# rs_embeds  = self.ts_vad.rs_forward(rs)
+				# rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
+				rs_embeds  = self.ts_vad.rs_forward(rs)
 				# TODO: Change back to cuda
-				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
-				# ts_embeds  = self.ts_vad.ts_forward(ts)
+				# ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
+				ts_embeds  = self.ts_vad.ts_forward(ts)
 				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
 				loss, _    = self.ts_loss.forward(outs, labels)	
 			scaler.scale(loss).backward()
@@ -79,18 +79,17 @@ class trainer(nn.Module):
 		rttm = open(args.rttm_save_path, "w")		
 		for num, (rs, ts, labels, filename, speaker_id, start) in enumerate(args.evalLoader, start = 1):
 			# TODO: Change back to cuda
-			labels  = torch.tensor(labels, dtype=torch.float32).cuda()
-			# labels  = torch.tensor(labels, dtype=torch.float32)
-			print(f"filename: {filename}")
+			# labels  = torch.tensor(labels, dtype=torch.float32).cuda()
+			labels  = torch.tensor(labels, dtype=torch.float32)
 			with torch.no_grad():		
 				# TODO: Change back to cuda
-				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
-				# rs_embeds  = self.ts_vad.rs_forward(rs)
+				# rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
+				rs_embeds  = self.ts_vad.rs_forward(rs)
 				# print(f"rs_embeding extracted")
 				
 				# TODO: Change back to cuda
-				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
-				# ts_embeds  = self.ts_vad.ts_forward(ts)
+				# ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
+				ts_embeds  = self.ts_vad.ts_forward(ts)
 				# print(f"ts_embeding extracted")
 
 				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
@@ -116,14 +115,6 @@ class trainer(nn.Module):
 			sys.stderr.write("Eval: [%2d] %.2f%% (est %.1f mins) Loss: %.5f\r"%\
 			(args.epoch, 100 * (num / args.evalLoader.__len__()), time_used * args.evalLoader.__len__() / num / 60, \
 			nloss/(num)))
-			# print("line updated")
-			# print(f"Iteration {num}:")
-			# print(f"Labels shape: {labels.shape}")
-			# print(f"Speaker ID shape: {speaker_id.shape}")
-			# print(f"rs shape: {rs.shape}")
-			# print(f"ts shape: {ts.shape}")
-			# print("\n")
-
 			sys.stderr.flush()		
 		
 		for filename in tqdm.tqdm(res_dict):
@@ -150,10 +141,18 @@ class trainer(nn.Module):
 				rttm.write(line)
 		rttm.close()
 		print('\n')
+		print("For collar value 0.0:")
+		out = subprocess.check_output(['perl', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/tools/SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.0', '-s %s'%(args.rttm_save_path), '-r /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting/exp/label/all.rttm'])
+		out = out.decode('utf-8')
+		DER, MS, FA, SC = float(out.split('/')[0]), float(out.split('/')[1]), float(out.split('/')[2]), float(out.split('/')[3])
+		print("DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%\n"%(DER, MS, FA, SC))
+
+		print("For collar value 0.25:")
 		out = subprocess.check_output(['perl', '/home/users/ntu/tlkushag/scratch/TSVAD_pytorch/ts-vad/tools/SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.25', '-s %s'%(args.rttm_save_path), '-r /home/users/ntu/tlkushag/scratch/TSVAD_pytorch/wespeaker_alimeeting/exp/label/all.rttm'])
 		out = out.decode('utf-8')
 		DER, MS, FA, SC = float(out.split('/')[0]), float(out.split('/')[1]), float(out.split('/')[2]), float(out.split('/')[3])
 		print("DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%\n"%(DER, MS, FA, SC))
+		
 		args.score_file.write("Eval: %d epoch, DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%, LOSS %f\n"%(args.epoch, DER, MS, FA, SC, nloss/num))
 		args.score_file.flush()
 
@@ -164,8 +163,8 @@ class trainer(nn.Module):
 	def load_parameters(self, path):
 		selfState = self.state_dict()
 		# TODO: Change back to cuda
-		loadedState = torch.load(path)
-		# loadedState = torch.load(path, map_location="cpu")
+		# loadedState = torch.load(path)
+		loadedState = torch.load(path, map_location="cpu")
 		for name, param in loadedState.items():
 			origName = name
 			if name not in selfState:
