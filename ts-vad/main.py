@@ -28,11 +28,11 @@ parser.add_argument('--train_path', type=str,   default="/home/users/ntu/adnan00
 parser.add_argument('--eval_list',  type=str,   default="/home/users/ntu/adnan002/scratch/alimeeting/Eval_Ali_far/ts_Eval.json",      help='The path of the evaluation list')
 parser.add_argument('--eval_path',  type=str,   default="/home/users/ntu/adnan002/scratch/alimeeting/Eval_Ali_far", help='The path of the evaluation data')
 parser.add_argument('--save_path',  type=str,    default="", help='Path to save the clean list')
-parser.add_argument('--musan_path',  type=str,   default="/home/users/ntu/adnan002/scratch/musan", help='The path of the evaluation data')
-parser.add_argument('--rir_path',  type=str,   default="/home/users/ntu/adnan002/scratch/RIRS_NOISES/simulated_rirs", help='The path of the evaluation data')
+parser.add_argument('--musan_path',  type=str,   default="/home/msai/adnan002/data/musan", help='The path of the evaluation data')
+parser.add_argument('--rir_path',  type=str,   default="/home/msai/adnan002/data/RIRS_NOISES/simulated_rirs", help='The path of the evaluation data')
 
 ### Others
-parser.add_argument('--speech_encoder_pretrain',  type=str,   default="/home/users/ntu/adnan002/scratch/repos/TSVAD_pytorch/ts-vad/pretrained_models/WavLM-Base+.pt",  help='Path of the pretrained speech_encoder')
+parser.add_argument('--speech_encoder_pretrain',  type=str,   default="/home/msai/adnan002/repos/TSVAD_pytorch/ts-vad/models/WavLM-Base+.pt",  help='Path of the pretrained speech_encoder')
 parser.add_argument('--train',   dest='train', action='store_true', help='Do training')
 parser.add_argument('--eval',    dest='eval', action='store_true', help='Do evaluation')
 

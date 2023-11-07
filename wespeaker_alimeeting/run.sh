@@ -1,13 +1,23 @@
-stage=6
-stop_stage=10
-data_path=/data08/alimeeting
-eval_path=${data_path}/Eval_Ali_far
-pseudo_path=${data_path}/Pseudo_Ali_far
-audio_dir=${eval_path}/audio_dir
-textgrid_dir=${eval_path}/textgrid_dir
+#!/bin/bash
+#SBATCH --partition=SCSEGPU_M1 
+#SBATCH --qos=q_amsai 
+#SBATCH --nodes=1 
+#SBATCH --gres=gpu:1 
+#SBATCH --mem=1G 
+#SBATCH --job-name=cluster-dihard-3-6
+#SBATCH --output=output_%x_%j.out
+#SBATCH --error=error_%x_%j.err
+
+stage=5
+stop_stage=6
+data_path=/home/msai/adnan002/data/DIHARD3
+eval_path=${data_path}/third_dihard_challenge_eval/data
+# pseudo_path=${data_path}/Pseudo_Ali_far
+audio_dir=${eval_path}/wav
+rttm_dir=${eval_path}/rttm
 eval_json=${eval_path}/ts_Eval.json
-target_audio_path=${pseudo_path}/target_audio
-target_embedding_path=${pseudo_path}/target_embedding
+# target_audio_path=${pseudo_path}/target_audio
+# target_embedding_path=${pseudo_path}/target_embedding
 
 if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
     echo "[1] Process dataset: Train/Eval dataset, get target speech and emebdding, get json files"
@@ -40,7 +50,7 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
     python modules/cluster.py \
             --scp exp/predict/wav.scp \
             --segments exp/predict/vad \
-            --source pretrained_models/ecapa-tdnn.model \
+            --source /home/msai/adnan002/repos/TSVAD_pytorch/ts-vad/models/ecapa-tdnn.model \
             --output exp/predict/vad_labels
 fi
 
@@ -59,24 +69,26 @@ if [ $stage -le 5 ] && [ ${stop_stage} -ge 5 ]; then
     find ${audio_dir} -name "*\.wav" > exp/tmp/tmp
     sort  exp/tmp/tmp > exp/tmp/wavlist
     awk -F '/' '{print $NF}'  exp/tmp/wavlist | awk -F '.' '{print $1}' >  exp/tmp/uttid
-    find -L $textgrid_dir -iname "*.TextGrid" >  exp/tmp/tmp
+    find -L $textgrid_dir -iname "*.rttm" >  exp/tmp/tmp
     sort  exp/tmp/tmp  > exp/tmp/textgrid.flist
     paste exp/tmp/uttid exp/tmp/textgrid.flist > exp/tmp/uttid_textgrid.flist
     while read text_file
     do
         text_grid=`echo $text_file | awk '{print $1}'`
         text_grid_path=`echo $text_file | awk '{print $2}'`
-        python external_tools/make_textgrid_rttm.py --input_textgrid_file $text_grid_path \
-                                        --uttid $text_grid \
-                                        --output_rttm_file exp/label/${text_grid}.rttm
+        # python external_tools/make_textgrid_rttm.py --input_textgrid_file $text_grid_path \
+        #                                --uttid $text_grid \
+        #                                --output_rttm_file exp/label/${text_grid}.rttm
     done < exp/tmp/uttid_textgrid.flist
     rm -r exp/tmp
     cat exp/label/*.rttm > exp/label/all.rttm
 fi
 
 
-if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then    
-    echo "[6] Get DER result"
+if [ ${stage} -le 6 ] && [ ${stop_stage} -ge 6 ]; then
+    echo "[6.1] Combine rttm files"
+    cat /home/msai/adnan002/data/DIHARD3/third_dihard_challenge_eval/data/rttm/*.rttm > exp/label/all.rttm
+    echo "[6.2] Get DER result"
     perl external_tools/SCTK-2.4.12/src/md-eval/md-eval.pl -c 0.25 -r exp/label/all.rttm -s exp/predict/res_rttm 
 fi
 
@@ -102,21 +114,21 @@ if [ ${stage} -le 8 ] && [ ${stop_stage} -ge 8 ]; then
         --source pretrained_models/ecapa-tdnn.model
 fi
 
-if [ ${stage} -le 9 ] && [ ${stop_stage} -ge 9 ]; then
-    echo "[9] Do TS-VAD with pseudo speech"
-    cd ../ts-vad
-    python main.py \
-    --eval_list ${eval_json} \
-    --eval_path ${pseudo_path} \
-    --save_path exps/debug \
-    --rs_len 4 \
-    --test_shift 1 \
-    --threshold 0.50 \
-    --n_cpu 12 \
-    --eval \
-    --init_model ../ts-vad/exps/res23/model/model_0036.model
-    cd -
-fi
+# if [ ${stage} -le 9 ] && [ ${stop_stage} -ge 9 ]; then
+#     echo "[9] Do TS-VAD with pseudo speech"
+#     cd ../ts-vad
+#     python main.py \
+#     --eval_list ${eval_json} \
+#     --eval_path ${pseudo_path} \
+#     --save_path exps/debug \
+#     --rs_len 4 \
+#     --test_shift 1 \
+#     --threshold 0.50 \
+#     --n_cpu 12 \
+#     --eval \
+#     --init_model ../ts-vad/exps/res23/model/model_0036.model
+#     cd -
+# fi
 
 # if [ ${stage} -le 10 ] && [ ${stop_stage} -ge 10 ]; then
 #     echo "Round2"

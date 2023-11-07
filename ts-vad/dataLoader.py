@@ -34,6 +34,10 @@ class train_loader(object):
 		filename_set = set()
 		# Load the data and labels
 		for line in lines:
+			# if line length is 0, skip
+			if len(line) == 0:
+				continue
+			
 			dict = json.loads(line)
 			length = len(dict['labels']) # Number of frames (1s = 25 frames)
 			filename = dict['filename']
@@ -68,9 +72,12 @@ class train_loader(object):
 		return ref_speech, target_speech, labels
 	
 	def get_ids(self, file, num_speaker):
-		typee = file.split('_')[1].lower() # dev or eval
-		path = "/home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
-
+		# typee = file.split('_')[1].lower() # dev or eval
+		# path = "/home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+		# path = "/home/msai/adnan002/data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+		
+		path = "/home/msai/adnan002/data/simulated_data_SD/data/all_files/target_audio/" + file
+		
 		# get all the wav files in the path
 		folder = self.train_path + '/target_audio/' + file + '/*.wav'
 		audios = glob.glob(folder)
@@ -123,7 +130,9 @@ class train_loader(object):
 				candidate_speakers = [k for k in self.speaker_to_utt.keys() if k not in speakers_in_this_videos]
 				random_speaker = random.choice(candidate_speakers)
 				random_file = random.choice(self.speaker_to_utt[random_speaker])
-				path = self.train_path + '/target_embedding/' + random_file[:11] + '/' + str(random_file.split('_')[-1]) + '.pt'
+				prefix = random_file[:random_file.rfind('_')]
+				path = self.train_path + '/target_embedding/' + prefix + '/' + str(random_file.split('_')[-1]) + '.pt'
+			
 			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = feature[random.randint(0,feature.shape[0]-1),:]
 			target_speeches.append(feature)
@@ -204,7 +213,8 @@ class eval_loader(object):
 	
 	def get_ids(self, file, num_speaker):
 		typee = file.split('_')[1].lower() # dev or eval
-		path = "/home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+		# path = "/home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+		path = "/home/msai/adnan002/data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
 
 		# get all the wav files in the path
 		folder = self.eval_path + '/target_audio/' + file + '/*.wav'
@@ -257,7 +267,11 @@ class eval_loader(object):
 				candidate_speakers = [k for k in self.speaker_to_utt.keys() if k not in speakers_in_this_videos]
 				random_speaker = random.choice(candidate_speakers)
 				random_file = random.choice(self.speaker_to_utt[random_speaker])
-				path = self.eval_path + '/target_embedding/' + random_file[:12] + '/' + str(random_file.split('_')[-1]) + '.pt'
+
+				# create variable prefix, which is the substring of random_file from 0 to last occurence of _
+				prefix = random_file[:random_file.rfind('_')]
+
+				path = self.eval_path + '/target_embedding/' + prefix + '/' + str(random_file.split('_')[-1]) + '.pt'
 			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = torch.mean(feature, dim = 0)
 			target_speeches.append(feature)

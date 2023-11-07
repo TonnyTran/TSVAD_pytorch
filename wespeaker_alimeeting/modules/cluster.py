@@ -152,8 +152,19 @@ def compute_embeddings(scp, segments, source,
 	utt_to_segments = read_segments(segments)
 
 	model = init_speaker_encoder(source)
-	room_id_dic = {'R8009_M8018_MS809': 2, 'R8009_M8019_MS810': 2, 'R8008_M8013_MS807': 3, 'R8009_M8020_MS810': 2, \
-					'R8007_M8010_MS803': 4, 'R8007_M8011_MS806': 4, 'R8003_M8001_MS801': 4, 'R8001_M8004_MS801': 4}
+	
+	# room_id_dic = {'R8009_M8018_MS809': 2, 'R8009_M8019_MS810': 2, 'R8008_M8013_MS807': 3, 'R8009_M8020_MS810': 2, \
+	# 				'R8007_M8010_MS803': 4, 'R8007_M8011_MS806': 4, 'R8003_M8001_MS801': 4, 'R8001_M8004_MS801': 4}
+	
+	num_spk_dict = "/home/msai/adnan002/repos/TSVAD_pytorch/ts-vad/exps/res24/metadata"
+	
+	# load room_id_dic from num_spk_dict
+	room_id_dic = {}
+	with open(num_spk_dict, 'r') as f:
+		for line in f:
+			utt, num_spk = line.strip().split()
+			room_id_dic[utt] = int(num_spk)
+	
 	num_speaker_list = []
 	for utt in tqdm(utt_to_wav.keys()):
 		# Per utterance processing
