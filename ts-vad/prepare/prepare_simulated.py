@@ -191,7 +191,9 @@ def main():
 					new_interval = remove_overlap(copy.deepcopy(new_interval), copy.deepcopy(intervals[o_key]))
 			new_intervals[key] = new_interval
 		
-		wav_file = glob.glob(os.path.join(args.path_wav, uttid) + '*.wav')[0]
+		# wav_file = glob.glob(os.path.join(args.path_wav, uttid) + '*.wav')[0]
+		wav_file = os.path.join(args.path_wav, uttid + '.wav')
+		
 		orig_audio, _ = soundfile.read(wav_file)
 		length = len(orig_audio) 
 

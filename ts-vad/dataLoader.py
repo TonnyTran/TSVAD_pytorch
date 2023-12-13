@@ -76,7 +76,8 @@ class train_loader(object):
 		# path = "/home/users/ntu/adnan002/scratch/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
 		# path = "/home/msai/adnan002/data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
 		
-		path = "/home/msai/adnan002/data/simulated_data_SD/data/all_files/target_audio/" + file
+		# path = "/home/msai/adnan002/data/simulated_data_SD/data/all_files/target_audio/" + file
+		path = "/home/users/ntu/adnan002/scratch/data/v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data/all_files/target_audio/" + file
 		
 		# get all the wav files in the path
 		folder = self.train_path + '/target_audio/' + file + '/*.wav'

@@ -2,7 +2,7 @@ import os
 import shutil
 
 # Define the parent directory
-parent_dir = '/home/msai/adnan002/data/simulated_data_SD'
+parent_dir = '/home/users/ntu/adnan002/scratch/data/v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/'
 
 # Get the list of directories in both 'data' and 'wav'
 data_dirs = os.listdir(os.path.join(parent_dir, 'data'))
