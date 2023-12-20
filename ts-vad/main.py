@@ -58,6 +58,8 @@ if args.train == True:
 		s.train_network(args)
 		if args.epoch % args.test_step == 0:
 			s.save_parameters(args.model_save_path + "/model_%04d.model"%args.epoch)
-			# s.eval_network(args)
+			train_simulated = True
+			if not train_simulated:
+				s.eval_network(args)
 		args.epoch += 1
 	quit()
