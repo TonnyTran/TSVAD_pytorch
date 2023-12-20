@@ -1,0 +1,31 @@
+# Configuration file
+
+# Training setting for main.py
+max_epoch: 100          # Maximum number of epochs
+warm_up_epoch: 10       # Warm up epochs
+batch_size: 10          # Batch size
+rs_len: 4              # Input length (second) of reference speech
+n_cpu: 12               # Number of loader threads
+test_step: 1            # Test and save every [test_step] epochs
+lr: 0.0001              # Learning rate
+lr_decay: 0.90          # Learning rate decay every [test_step] epochs
+test_shift: 0.5          # Input shift (second) for testing
+min_silence: 0.32       # Remove the speech with short silence during testing
+min_speech: 0.00        # Combine the short speech during testing
+threshold: 0.50         # The threshold during testing
+train: false            # Do training
+eval: true             # Do evaluation
+
+init_model: ""                                                  # Init TS-VAD model from pretrain
+train_list: "/home/users/ntu/tlkushag/scratch/data08/alimeeting/Train_Ali_far/ts_Train.json"    # The path of the training list
+train_path: "/home/users/ntu/tlkushag/scratch/data08/alimeeting/Train_Ali_far"                  # The path of the training data
+eval_list: "/home/users/ntu/tlkushag/scratch/data08/alimeeting/ts_Eval.json"                    # The path of the evaluation list
+eval_path: "/home/users/ntu/tlkushag/scratch/data08/alimeeting/Eval_Ali_far"                    # The path of the evaluation data
+save_path: "./exps/res23"                                       # Path to save the clean list
+musan_path: "/home/users/ntu/tlkushag/scratch/data08/Others/musan_split"                        # The path of the musan noise
+rir_path: "/home/users/ntu/tlkushag/scratch/data08/Others/RIRS_NOISES/simulated_rirs"           # The path of the rir noise
+speech_encoder_pretrain: "./pretrained_models/WavLM-Base+.pt"     # Path of the pretrained speech_encoder
+
+# Model setting for ts_vad.py
+# ts_vad:
+
