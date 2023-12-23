@@ -3,7 +3,6 @@ import sys
 import glob
 
 # Get the directory path from the command-line arguments
-# dir_path = "/home/msai/adnan002/data/simulated_data_SD/data"
 dir_path = "data/v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data"
 
 # Find all 'rttm' files in the directory and its subdirectories
