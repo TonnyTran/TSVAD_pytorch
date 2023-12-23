@@ -30,6 +30,7 @@ parser.add_argument('--eval_path',  type=str,   default="/home/users/ntu/adnan00
 parser.add_argument('--save_path',  type=str,    default="", help='Path to save the clean list')
 parser.add_argument('--musan_path',  type=str,   default="/home/users/ntu/adnan002/scratch/data/musan", help='The path of the evaluation data')
 parser.add_argument('--rir_path',  type=str,   default="/home/users/ntu/adnan002/scratch/data/RIRS_NOISES/simulated_rirs", help='The path of the evaluation data')
+parser.add_argument('--simtrain', type=bool, default=False, help='For simulated data training pass train_list and train_path of simulated data. Eval list and path is not used in this mode. You can call s.eval_network(args) if you wish to run eval as well.')
 
 ### Others
 parser.add_argument('--speech_encoder_pretrain',  type=str,   default="/home/users/ntu/adnan002/scratch/repos/TSVAD_pytorch/ts-vad/pretrained_models/WavLM-Base+.pt",  help='Path of the pretrained speech_encoder')
@@ -58,8 +59,7 @@ if args.train == True:
 		s.train_network(args)
 		if args.epoch % args.test_step == 0:
 			s.save_parameters(args.model_save_path + "/model_%04d.model"%args.epoch)
-			train_simulated = True
-			if not train_simulated:
+			if not args.simtrain:
 				s.eval_network(args)
 		args.epoch += 1
 	quit()
