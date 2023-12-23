@@ -1,7 +1,7 @@
 import os
 
 # Define the base path
-base_path = "/home/users/ntu/adnan002/scratch/data/v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data"
+base_path = "data/v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data"
 
 # Define the target directory
 target_dir = os.path.join(base_path, "all_files")

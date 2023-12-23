@@ -120,13 +120,13 @@ class trainer(nn.Module):
 		print (args.rttm_save_path)
 		print ('E$$$$')
 
-		out = subprocess.check_output(['perl', '/home/users/ntu/adnan002/scratch/repos/temp/TSVAD_pytorch/ts-vad/tools/SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.25', '-s %s'%(args.rttm_save_path), '-r /home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_eval/data/rttm/all.rttm'])
+		out = subprocess.check_output(['perl', 'tools/SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.25', '-s %s'%(args.rttm_save_path), '-r data/DIHARD3/third_dihard_challenge_eval/data/rttm/all.rttm'])
 		out = out.decode('utf-8')
 		DER, MS, FA, SC = float(out.split('/')[0]), float(out.split('/')[1]), float(out.split('/')[2]), float(out.split('/')[3])
 		print("DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%\n"%(DER, MS, FA, SC))
 		args.score_file.write("Eval full 0.25: %d epoch, DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%, LOSS %f\n"%(args.epoch, DER, MS, FA, SC, nloss/num))
 
-		out = subprocess.check_output(['perl', '/home/users/ntu/adnan002/scratch/repos/temp/TSVAD_pytorch/ts-vad/tools/SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.00', '-s %s'%(args.rttm_save_path), '-r /home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_eval/data/rttm/all.rttm'])
+		out = subprocess.check_output(['perl', 'tools/SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.00', '-s %s'%(args.rttm_save_path), '-r data/DIHARD3/third_dihard_challenge_eval/data/rttm/all.rttm'])
 		out = out.decode('utf-8')
 		DER, MS, FA, SC = float(out.split('/')[0]), float(out.split('/')[1]), float(out.split('/')[2]), float(out.split('/')[3])
 		print("DER %2.2f%%, MS %2.2f%%, FA %2.2f%%, SC %2.2f%%\n"%(DER, MS, FA, SC))

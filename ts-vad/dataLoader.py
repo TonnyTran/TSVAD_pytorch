@@ -10,7 +10,7 @@ def init_loader(args):
 	return args
 
 class train_loader(object):
-	def __init__(self, train_list, train_path, rs_len, musan_path, rir_path, **kwargs):
+	def __init__(self, train_list, train_path, rs_len, musan_path, rir_path, simtrain, **kwargs):
 		self.noisetypes = ['noise','speech','music']
 		self.noisesnr = {'noise':[0,15],'speech':[13,20],'music':[5,15]}
 		self.numnoise = {'noise':[1,1], 'speech':[3,8], 'music':[1,1]}
@@ -22,7 +22,8 @@ class train_loader(object):
 			self.noiselist[file.split('/')[-3]].append(file)
 		self.rir_files  = glob.glob(os.path.join(rir_path,'*/*/*.wav'))
 
-		self.train_path = train_path	
+		self.train_path = train_path
+		self.simtrain = simtrain	
 		self.rs_len = int(rs_len * 25) # Number of frames for reference speech
 
 		self.data_list = []
@@ -75,10 +76,10 @@ class train_loader(object):
 		# Use simulated data path if simtrain is True, else use DIHARD3 path
 		
 		if self.simtrain:
-			path = "/home/users/ntu/adnan002/scratch/data/v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data/all_files/target_audio/" + file
+			path = "data/v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data/all_files/target_audio/" + file
 		else:
 			typee = file.split('_')[1].lower() # dev or eval
-			path = "/home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+			path = "data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
 		# get all the wav files in the path
 		folder = self.train_path + '/target_audio/' + file + '/*.wav'
 		audios = glob.glob(folder)
@@ -214,7 +215,7 @@ class eval_loader(object):
 	
 	def get_ids(self, file, num_speaker):
 		typee = file.split('_')[1].lower() # dev or eval
-		path = "/home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+		path = "data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
 		
 		# get all the wav files in the path
 		folder = self.eval_path + '/target_audio/' + file + '/*.wav'
