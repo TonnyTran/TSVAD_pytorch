@@ -1,6 +1,20 @@
-# TS-VAD
+# TS-VAD on DIHARD3
 
-## Prepare
+## Installation
+### Clone the repo and create a new virtual environment
+
+Clone the repo:
+```
+git clone -b adnan https://github.com/TonnyTran/TSVAD_pytorch.git
+cd TSVAD_pytorch
+```
+Using conda to create a fresh virtual environment with the dependencies, and activate it:
+```
+conda env create --name tsvad --file=tsvad.yaml
+conda activate tsvad
+```
+
+## Prepare DIHARD3
 - Download DIHARD3 dataset: The dataset looks like
 
         # DIHARD3
@@ -227,3 +241,10 @@ python main.py \
 - You may need to run commands like `chmod +x *.sh` for shell script files on linux.
 - For simplicity, you can try with ground truth embeddings. Otherwise, replace `third_dihard_challenge_eval/data/rttm` files with clustering method results or whatever approach you wish to use.
 - To use clustering results for TS-VAD, replace rttm folder in `third_dihard_challenge_eval/data/rttm` with your clustering result rttm files.
+
+## Scoring
+
+To check the core results:
+- Run `chmod +x <files>`: `parse_options.sh` and `rttm_from_uem.py`
+- Specify the DIHARD3 EVAL directory variable inside `./score.sh`
+- Copy the `res_rttm` (experiment rttm) and `all_rttm` (correct rttm) into `scoring/` and run `./score.sh`
