@@ -72,3 +72,5 @@ python main.py \
 ```
 
 Note: `eval_list` and `eval_path` is not used in `simtrain` mode. If you wish to evaluate as well, you can fix the code around the line `s.eval_network(args)` in `main.py`
+
+It is also suggested to read README.md and DIHARD.md if there are any gaps.
