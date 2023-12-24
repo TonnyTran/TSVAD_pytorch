@@ -1,64 +1,229 @@
 # TS-VAD
 
 ## Prepare
-- Download Alimeeting dataset: Train_Ali_far.tar.gz and Eval_Ali.tar.gz. The dataset looks like:
+- Download DIHARD3 dataset: The dataset looks like
 
-        # alimeeting (Only far data, the first channel is used)
-        # ├── Train_Ali_far 
-        # │   ├── audio_dir
-        # │   ├── textgrid_dir
-        # ├── Eval_Ali_far 
-        # │   ├── audio_dir
-        # │   ├── textgrid_dir
+        # DIHARD3
+        # ├── third_dihard_challenge_dev 
+        # |   ├──── data
+        # │     ├── flac
+        # │     ├── rttm
+        # |     ├── sad
+        # |     ├── uem
+        # |     ├── uem_scoring
+        # ├── third_dihard_challenge_eval 
+        # |   ├──── data
+        # │     ├── flac
+        # │     ├── rttm
+        # |     ├── sad
+        # |     ├── uem
+        # |     ├── uem_scoring
 
-- [wavlm pretrain model](https://drive.google.com/file/d/1-zlAj2SyVJVsbhifwpTlAfrgc9qu-HDb/view?usp=share_link), put in 'ts-vad/pretrained_models' (build this folder)
+- Install sox using `sudo apt-get install sox`. Create a folder `wav` in `third_dihard_challenge_dev` and `third_dihard_challenge_eval`. Convert all flac audios to wav and keep it in this folder `wav`.
 
-### from wespeaaker_alimeeting/run.sh shell
-- Use run.sh, step 1 can extract the target audio and embedding, genenerate the json file automaticlly.
+- For the `wav` directory, you can use this script. This creates the `wav` folder in the same parent directory as `flac` and converts each `.flac` file to `.wav`. Install `sox` using `sudo apt-get install sox` before running the below script:
+```mkdir -p "$(dirname "flac")/wav" && find "flac" -type f -name "*.flac" -exec sh -c 'sox "{}" "$(dirname "{}")/wav/$(basename "{}" .flac).wav"' \;```.
 
-### from google drive
-- [My json files + extracted speaker embedding + trained ts-vad model + training log](https://drive.google.com/drive/folders/1AFip2h9W7sCFbzzasL_fAkGUNZOzaTGK?usp=share_link), put the ecapa-tdnn.model into 'wespeaker_alimeeting/pretrainde_models', put the ts-vad.model into 'ts-vad/pretrained_models'.
+- Execute `ts-vad/prepare/prepare_dihard.sh` to get `target_audio` and `target_embeddings` and `ts_***.json` file
 
+- In `third_dihard_challenge_eval/data/rttm`, run command `cat *.rttm > all.rttm`. This will be used later to get the DER scores.
 
-## Dataset Format
-My dataset looks like this:
+- Following these steps your DIHARD3 directory should have these files and folders to run the TS-VAD model:
 
-    # alimeeting (Only far data, the first channel is used)
-    # ├── Train_Ali_far 
-    # │   ├── target_embedding (target speaker embeddings, find in Google Link)
-    # │       ├── R0008_M0054_MS002 (video id)
-    # │           ├── 1.pt (embeddings for the first speaker)
-    # │           ├── 2.pt
-    # │           ├── 3.pt
-    # │           ├── 4.pt
-    # │       ├── ...
-    # │   ├── target_speech (speech dataset, obtain by run prepare_data.py)
-    # │       ├── R0008_M0054_MS002 (video id)
-    # │           ├── 1.wav (clean speech for the first speaker)
-    # │           ├── 2.wav
-    # │           ├── 3.wav
-    # │           ├── 4.wav
-    # │           ├── all.wav (the entire speech for the video, only the first channel)
-    # │       ├── ...
-    # │   ├── audio_dir
-    # │   ├── textgrid_dir
-    # ├── Eval_Ali_far (Similar)
-    # │   ├── ...
-    # ├── Pseudo_Ali_far (Generate during clustering based speaker diarization)
-    # │   ├── target_embedding (target speaker embeddings)
-    # │   ├── target_speech (speech dataset)
+        # DIHARD3
+        # ├── third_dihard_challenge_dev 
+        # |   ├──── data
+        # │     ├── wav
+        # |         |── DH_DEV_****.wav
+        # |         |── ....
+        # |         |── DH_DEV_****.wav
+        # │     ├── rttm
+        # |         |── DH_DEV_****.rttm
+        # |         |── ....
+        # |         |── DH_DEV_****.rttm
+        # |     ├── target_audio
+        # │         |── DH_DEV_****
+        # │             ├── <eachspeaker.wav> and <all.wav>
+        # |         |── ...
+        # │         |── DH_DEV_****
+        # │             ├── <eachspeaker.wav> and <all.wav>
+        # |     ├── target_embeddings
+        # │         |── DH_DEV_****
+        # │             ├── <eachspeaker.pt>
+        # |         |── ...
+        # │         |── DH_DEV_****
+        # │             ├── <eachspeaker.pt>
+        # |     ├── ts_dev.json
+        # ├── third_dihard_challenge_eval 
+        # |   ├──── data
+        # │     ├── wav
+        # |         |── DH_EVAL_****.wav
+        # |         |── ....
+        # |         |── DH_EVAL_****.wav
+        # │     ├── rttm
+        # |         |── all.rttm
+        # |         |── DH_EVAL_****.rttm
+        # |         |── ....
+        # |         |── DH_EVAL_****.rttm
+        # |     ├── target_audio
+        # │         |── DH_EVAL_****
+        # │             ├── <eachspeaker.wav> and <all.wav>
+        # |         |── ...
+        # │         |── DH_EVAL_****
+        # │             ├── <eachspeaker.wav> and <all.wav>
+        # |     ├── target_embeddings
+        # │         |── DH_EVAL_****
+        # │             ├── <eachspeaker.pt>
+        # |         |── ...
+        # │         |── DH_EVAL_****
+        # │             ├── <eachspeaker.pt>
+        # |     ├── ts_eval.json
+
+## Add pre-trained libraries
+
+- Add [WavLM-Base+.pt](https://drive.google.com/file/d/1-zlAj2SyVJVsbhifwpTlAfrgc9qu-HDb/view?usp=share_link) in `ts-vad/pretrained_models` (build this folder)
+
+- Add [ecapa-tdnn.model](https://drive.google.com/file/d/1E-ju12Jy1fID2l4x-nj0zB5XUHSKWsRB/view?usp=drive_link) to `ts-vad/pretrained_models`
+
+- We use musan and rirs for data augmentation and you can pass these parameters in `run_train.sh`. Download [musan](https://www.openslr.org/17/) and [rirs noise](https://www.openslr.org/28/).
 
 ## Usage
-- [1] bash run.sh in wespeaker_alimeeting, only step 1, to prepare dataset
-- [2] bash run_train.sh in ts-vad, obtain the ts-vad model
-- TS-VAD Result (Ground Truth): DER / MS / FA / SC = 4.30 / 2.68 / 1.20 / 0.41
-- [3] bash run_eval.sh for evaluation (init_model: select the model for evaluation), evalute use ground truth speech
-- [4] bash run.sh in wespeaker_alimeeting, step 2 to step 9, can obtain two results:
-- Clustering Result: DER / MS / FA / SC = 16.55 / 14.53 / 1.13 / 0.89
-- TS-VAD Result (Pseudo Label): DER / MS / FA / SC = 4.43
+- Edit `run_train.sh` file with correct parameters. You should also pass musan and rirs path here.
+
+- A sample script looks like this:
+
+```
+python main.py \
+--train_list DIHARD3/third_dihard_challenge_dev/data/ts_dev.json \
+--eval_list DIHARD3/third_dihard_challenge_eval/data/ts_eval.json \
+--train_path DIHARD3/third_dihard_challenge_dev/data \
+--eval_path DIHARD3/third_dihard_challenge_eval/data \
+--musan_path data/musan \
+--rir_path data/RIRS_NOISES/simulated_rirs \
+--save_path exps/res23 \
+--warm_up_epoch 10 \
+--batch_size 40 \
+--rs_len 4 \
+--test_shift 4 \
+--lr 0.0001 \
+--test_step 1 \
+--max_epoch 40 \
+--train
+```
+
+## Simulated Data
+
+### Initial Structure
+
+The initial structure of the simulated data is as follows:
+
+```plaintext
+SIMU3
+└── data
+    ├── swb_sre_cv_ns1_beta2_200
+    ├── .....
+    └── swb_sre_tr_ns6_beta20_1000 
+└── wav 
+    ├── swb_sre_cv_ns1_beta2_200
+    ├── .....
+    └── swb_sre_tr_ns6_beta20_1000 
+```
+
+### Preparation Steps
+
+To prepare the simulated data, execute the following scripts in the given order:
+
+1. `1-make_rttm_folders.py`
+2. `2-copy_wav.py`
+3. `prepare_simulated.sh`
+4. `3.2-move_to_all_files.py`
+5. `4-move_jsons.py`
+
+### Final Structure
+
+After running the above scripts, your simulated data for TS-VAD should have the following structure:
+
+```plaintext
+all_files
+├── rttms
+│   ├── data_simu3_wav_swb_sre_cv_ns1_beta2_200_1_mix_0000001.rttm
+│   └── < 7200 total files>
+├── target_audio
+│   ├── data_simu3_wav_swb_sre_cv_ns1_beta2_200_1_mix_0000001
+│   │   ├── 1.wav
+│   │   ├── all.wav
+│   │   └── <eachspeaker.wav + all.wav>
+│   └── < 7200 total dirs>
+├── target_embedding
+│   ├── data_simu3_wav_swb_sre_cv_ns1_beta2_200_1_mix_0000001
+│   │   ├── 1.pt
+│   │   └── <eachspeaker.pt>
+│   └── < 7200 total dirs>
+└── all_simtrain.json
+```
+
+### Usage
+
+Additionally pass `--simtrain True` if using simulated data for training
+
+```
+python main.py \
+--train_list v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data/all_files/all_simtrain.json \
+--eval_list DIHARD3/third_dihard_challenge_eval/data/ts_eval.json \
+--train_path v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data/all_files \
+--eval_path DIHARD3/third_dihard_challenge_eval/data \
+--save_path exps/res23 \
+--warm_up_epoch 10 \
+--batch_size 40 \
+--rs_len 4 \
+--test_shift 4 \
+--lr 0.0001 \
+--test_step 1 \
+--max_epoch 40 \
+--train \
+--simtrain True
+```
+
+Note: `eval_list` and `eval_path` is not used in `simtrain` mode. If you wish to evaluate as well, you can fix the code around the line `s.eval_network(args)` in `main.py`
+
+### Fine-tuning on DIHARD3
+
+After pre-training on simulated data, pass the trained model on simulated data using `--init_model` parameter. Keep everything for DIHARD3 training the same. This finetunes the trained model on DIHARD3 dev set.
+
+### Results
+- Download our best models from [this link](https://entuedu-my.sharepoint.com/:f:/g/personal/adnan002_e_ntu_edu_sg/EnYPxis6jm5Ao8wBRQYDi9sBloQY7T2l52rsxUL-WkF2-g?e=IRcgo7). Password: 1234
+
+- Ground truth DER score
+Full Set (c=0.25): `DER 8.97%, MS 5.97%, FA 0.90%, SC 2.10%`
+Core Set (c=0.0): `DER 24.27%, MS 12.9%, FA 7.6%, SC 3.8%`
+
+- Clustering DER score
+Full Set (c=0.25): `DER 12.45%, MS 4.61%, FA 4.54%, SC 3.30%`
+Core Set (c=0.0): `DER 28.74%, MS 15.6%, FA 6.4%, SC 6.7%`
+
+- To replicate the results. Use `--eval` mode and pass `--init_model` from the model in the link above:
+
+```
+python main.py \
+--train_list data/DIHARD3/third_dihard_challenge_dev/data/ts_dev.json \
+--eval_list data/DIHARD3/third_dihard_challenge_eval/data/ts_eval.json \
+--train_path data/DIHARD3/third_dihard_challenge_dev/data \
+--eval_path data/DIHARD3/third_dihard_challenge_eval/data \
+--save_path exps/eval24 \
+--rs_len 4 \
+--test_shift 0.5 \
+--min_silence 0.32 \
+--min_speech 0.00 \
+--threshold 0.50 \
+--n_cpu 12 \
+--eval \
+--init_model <replace with downloaded model> \
+```
+
 
 ## Notice
-- Change the data path in wespeaker_alimeeting/run.sh, data_path=/data08/alimeeting
-- Change the data path in ts-vad/run_train.sh and run_eval.sh, include the musan and rir dataset path
+- Change the data path in ts-vad/run_train.sh and run_eval.sh, include the musan and rir dataset path.
 - Speaker embedding is extracted from ecapa-tdnn model. I train this model on CnCeleb1+2+Alimeeting Training set
-- To simply the code, the ground truth number of speakers are used in the wespeaker_alimeeting clustering process
+- You may need to run commands like `chmod +x *.sh` for shell script files on linux.
+- For simplicity, you can try with ground truth embeddings. Otherwise, replace `third_dihard_challenge_eval/data/rttm` files with clustering method results or whatever approach you wish to use.
+- To use clustering results for TS-VAD, replace rttm folder in `third_dihard_challenge_eval/data/rttm` with your clustering result rttm files.

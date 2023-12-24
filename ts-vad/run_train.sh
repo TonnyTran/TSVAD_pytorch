@@ -3,6 +3,8 @@ python main.py \
 --eval_list data/DIHARD3/third_dihard_challenge_eval/data/ts_eval.json \
 --train_path data/DIHARD3/third_dihard_challenge_dev/data \
 --eval_path data/DIHARD3/third_dihard_challenge_eval/data \
+--musan_path data/musan \
+--rir_path data/RIRS_NOISES/simulated_rirs \
 --save_path exps/res23 \
 --warm_up_epoch 10 \
 --batch_size 40 \
