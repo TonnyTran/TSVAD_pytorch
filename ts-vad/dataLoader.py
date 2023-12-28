@@ -75,13 +75,9 @@ class train_loader(object):
 	def get_ids(self, file, num_speaker):
 		# Use simulated data path if simtrain is True, else use DIHARD3 path
 		
-		if self.simtrain:
-			path = "data/v2_simulated_data_Switchboard_SRE_small_16k/data/simu3/data/all_files/target_audio/" + file
-		else:
-			typee = file.split('_')[1].lower() # dev or eval
-			path = "data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+		path = self.train_path + "/target_audio/" + file
 		# get all the wav files in the path
-		folder = self.train_path + '/target_audio/' + file + '/*.wav'
+		folder = path + '/*.wav'
 		audios = glob.glob(folder)
 		audios.remove(path + "/all.wav")
 		audios = [k.split('/')[-1].split('.')[0] for k in audios]
@@ -215,10 +211,10 @@ class eval_loader(object):
 	
 	def get_ids(self, file, num_speaker):
 		typee = file.split('_')[1].lower() # dev or eval
-		path = "data/DIHARD3/third_dihard_challenge_" + typee + "/data/target_audio/" + file
+		path = self.eval_path + "/target_audio/" + file
 		
 		# get all the wav files in the path
-		folder = self.eval_path + '/target_audio/' + file + '/*.wav'
+		folder = path + '/*.wav'
 		audios = glob.glob(folder)
 		audios.remove(path + "/all.wav")
 		audios = [k.split('/')[-1].split('.')[0] for k in audios]
