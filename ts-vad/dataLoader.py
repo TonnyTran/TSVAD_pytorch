@@ -210,7 +210,6 @@ class eval_loader(object):
 		return ref_speech, target_speech, labels, file, numpy.array(speaker_ids), numpy.array(start)
 	
 	def get_ids(self, file, num_speaker):
-		typee = file.split('_')[1].lower() # dev or eval
 		path = self.eval_path + "/target_audio/" + file
 		
 		# get all the wav files in the path
