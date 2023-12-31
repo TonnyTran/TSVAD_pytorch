@@ -217,7 +217,7 @@ def main():
 			new_audio_dict[key] = [new_audio, output_wav]
 
 		# filter new_audio_dict to get the longest 4 speakers
-		new_audio_dict = dict(heapq.nlargest(4, new_audio_dict.items(), key=lambda item: len(item[1][0])))
+		new_audio_dict = dict(heapq.nlargest(8, new_audio_dict.items(), key=lambda item: len(item[1][0])))
 		mapping = {}
 		mapping1 = {}
 

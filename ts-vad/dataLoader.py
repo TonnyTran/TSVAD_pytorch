@@ -64,8 +64,8 @@ class train_loader(object):
 	def __getitem__(self, index):
 		# T: number of frames (1s contrains 25 frames)
 		# ref_speech : 16000 * T
-		# labels : 4, T
-		# target_speech: 4, 192
+		# labels : 4, T -> change to 8, T
+		# target_speech: 4, 192 -> change to 8, 192
 		file, num_speaker, start, stop = self.data_list[index]
 		speaker_ids = self.get_ids(file, num_speaker)
 		ref_speech, labels = self.load_rs(file, speaker_ids, start, stop)
@@ -73,8 +73,6 @@ class train_loader(object):
 		return ref_speech, target_speech, labels
 	
 	def get_ids(self, file, num_speaker):
-		# Use simulated data path if simtrain is True, else use DIHARD3 path
-		
 		path = self.train_path + "/target_audio/" + file
 		# get all the wav files in the path
 		folder = path + '/*.wav'
@@ -84,8 +82,8 @@ class train_loader(object):
 		audios = [int(k) for k in audios]
 		speaker_ids = audios
 
-		speaker_ids = speaker_ids[:4]
-		while len(speaker_ids) < 4:
+		speaker_ids = speaker_ids[:8]
+		while len(speaker_ids) < 8:
 			speaker_ids.append(0)
 		
 		random.shuffle(speaker_ids)
@@ -115,7 +113,7 @@ class train_loader(object):
 			else:
 				label = [0] * (stop - start)
 				labels.append(label)
-		labels = numpy.array(labels) # 4, T
+		labels = numpy.array(labels) # 4, T -> 8, T
 		return ref_speech, labels
 	
 	def load_ts(self, file, speaker_ids):
@@ -134,7 +132,7 @@ class train_loader(object):
 			feature = torch.load(path, map_location=torch.device('cpu'))
 			feature = feature[random.randint(0,feature.shape[0]-1),:]
 			target_speeches.append(feature)
-		target_speeches = torch.stack(target_speeches) # 4, 192
+		target_speeches = torch.stack(target_speeches) # 4, 192 -> 8, 192
 		return target_speeches
 	
 	def __len__(self):
@@ -220,20 +218,12 @@ class eval_loader(object):
 		audios = [int(k) for k in audios]
 		speaker_ids = audios
 
-		speaker_ids = speaker_ids[:4]
-		while len(speaker_ids) < 4:
+		speaker_ids = speaker_ids[:8]
+		while len(speaker_ids) < 8:
 			speaker_ids.append(0)
 		
 		return speaker_ids
 
-		
-		speaker_ids = []
-		for i in range(1, num_speaker + 1):
-			speaker_ids.append(i)
-		for i in range(num_speaker + 1, 5):
-			speaker_ids.append(0)
-		return speaker_ids
-	
 	def load_rs(self, file, speaker_ids, start, stop):
 		ref_speech, _ = soundfile.read(self.eval_path + '/target_audio/' + file + '/all.wav', start = start * 640, stop = stop * 640 + 240)		
 		ref_speech = torch.FloatTensor(numpy.array(ref_speech))
@@ -261,7 +251,11 @@ class eval_loader(object):
 			else:
 				speakers_in_this_videos = self.room_to_speaker[file]
 				candidate_speakers = [k for k in self.speaker_to_utt.keys() if k not in speakers_in_this_videos]
-				random_speaker = random.choice(candidate_speakers)
+				random_speaker = ""
+				if len(candidate_speakers) == 0:
+					random_speaker = random.choice(self.room_to_speaker[file])
+				else:
+					random_speaker = random.choice(candidate_speakers)
 				random_file = random.choice(self.speaker_to_utt[random_speaker])
 
 				# create variable prefix, which is the substring of random_file from 0 to last occurence of _

@@ -120,3 +120,10 @@ venv.bak/
 
 *.out
 *.err
+
+tsvadtrain.*
+preparedihard.*
+.vscode/launch.json
+ts-vad/check.py
+ts-vad/sample.py
+.gitignore

@@ -1,9 +1,9 @@
 python main.py \
---train_list data/DIHARD3/third_dihard_challenge_dev/data/ts_dev.json \
---eval_list data/DIHARD3/third_dihard_challenge_eval/data/ts_eval.json \
---train_path data/DIHARD3/third_dihard_challenge_dev/data \
---eval_path data/DIHARD3/third_dihard_challenge_eval/data \
---save_path exps/eval24 \
+--train_list /home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_dev/data/ts_dev.json \
+--eval_list /home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_eval/data/ts_eval.json \
+--train_path /home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_dev/data \
+--eval_path /home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_eval/data \
+--save_path exps/eval10 \
 --rs_len 4 \
 --test_shift 0.5 \
 --min_silence 0.32 \
@@ -11,4 +11,4 @@ python main.py \
 --threshold 0.50 \
 --n_cpu 12 \
 --eval \
---init_model ts-vad/exps/res23/model/model_0024.model \
+--init_model /home/users/ntu/adnan002/scratch/repos/temp2/TSVAD_pytorch/ts-vad/exps/res24/model/model_0010.model \

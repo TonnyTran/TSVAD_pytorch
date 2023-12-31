@@ -6,15 +6,15 @@ from tools import *
 class Loss(nn.Module):
     def __init__(self):   
         super(Loss, self).__init__()
-        self.fc = nn.Linear(96, 1)
+        self.fc = nn.Linear(48, 1)  # Change input size to 48
         self.loss = nn.BCEWithLogitsLoss(reduction = 'mean')
         self.m = nn.Sigmoid()
 
-    def forward(self, x, labels=None): # x : B, 4, T, 96; labels: B, 4, T
-        x = self.fc(x).squeeze(-1)        
+    def forward(self, x, labels=None):  # x : B, 8, T, 48; labels: B, 8, T
+        x = self.fc(x).squeeze(-1)  # Remove last dimension after applying fc
         total_loss = 0
 
-        for i in range(4):
+        for i in range(8):
             output = x[:,i,:]
             label = labels[:,i,:]
             loss = self.loss(output, label)
@@ -23,4 +23,4 @@ class Loss(nn.Module):
         x = self.m(x)
         x = x.data.cpu().numpy()
 
-        return total_loss / 4, x
+        return total_loss / 8, x
