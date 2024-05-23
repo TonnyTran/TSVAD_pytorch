@@ -14,8 +14,23 @@ conda env create --name tsvad --file=tsvad.yaml
 conda activate tsvad
 ```
 
+## Add pre-trained libraries
+
+- Add [WavLM-Base+.pt](https://drive.google.com/file/d/1-zlAj2SyVJVsbhifwpTlAfrgc9qu-HDb/view?usp=share_link) in `ts-vad/pretrained_models` (build this folder)
+
+- Add [ecapa-tdnn.model](https://drive.google.com/file/d/1E-ju12Jy1fID2l4x-nj0zB5XUHSKWsRB/view?usp=drive_link) to `ts-vad/pretrained_models`
+
+- We use musan and rirs for data augmentation and you can pass these parameters in `run_train.sh`. Download [musan](https://www.openslr.org/17/) and [rirs noise](https://www.openslr.org/28/).
+
+
 ## Prepare DIHARD3
-- Download DIHARD3 dataset: The dataset looks like
+
+- Download DIHARD3 dataset
+```
+pip install gdown
+gdown --folder 1S3RqdbUszN1nRjUAmtm_PvrBDtnXn65Z
+```
+- The dataset looks like
 
         # DIHARD3
         # ├── third_dihard_challenge_dev 
@@ -35,12 +50,27 @@ conda activate tsvad
 
 - Install sox using `sudo apt-get install sox`. Create a folder `wav` in `third_dihard_challenge_dev` and `third_dihard_challenge_eval`. Convert all flac audios to wav and keep it in this folder `wav`.
 
-- For the `wav` directory, you can use this script. This creates the `wav` folder in the same parent directory as `flac` and converts each `.flac` file to `.wav`. Install `sox` using `sudo apt-get install sox` before running the below script:
-```mkdir -p "$(dirname "flac")/wav" && find "flac" -type f -name "*.flac" -exec sh -c 'sox "{}" "$(dirname "{}")/wav/$(basename "{}" .flac).wav"' \;```.
+- For the `wav` directory, you can use this script. This creates the `wav` folder in the same parent directory as `flac` and converts each `.flac` file to `.wav`. Install `sox` using `sudo apt-get install sox` before running the below script:  
+```mkdir -p "flac/wav" && find "flac" -type f -name "*.flac" -exec sh -c 'sox "{}" "$(dirname "{}")/wav/$(basename "{}" .flac).wav"' \; && mv "flac/wav" .```.
+
+### Downsampling and Upsampling
+
+For best results, we found that matching the DIHARD3 data with the simulated pretraining data gives better results. Simulated data is upsampled from 8K to 16K.
+
+To mimic 8K to 16K, we first downsample 16K DIHARD3 wav to 8K and then upsample back to 16K. This boosts the TS-VAD results on DIHARD3 significantly.
+
+To make this change simply run below code inside `wav` folders:
+```for file in *.wav; do sox -G "$file" -r 8000 temp.wav; sox -G temp.wav -r 16000 "${file%.wav}_converted.wav"; done; rm temp.wav```
+
+DEV: ```rm DH_DEV_*[0-9].wav && rename 's/_converted//' *_converted.wav```  
+EVAL: ```rm DH_EVAL_*[0-9].wav && rename 's/_converted//' *_converted.wav```
+
+### Prepare Target Audio and Embeddings
 
 - Execute `ts-vad/prepare/prepare_dihard.sh` to get `target_audio` and `target_embeddings` and `ts_***.json` file
 
-- In `third_dihard_challenge_eval/data/rttm`, run command `cat *.rttm > all.rttm`. This will be used later to get the DER scores.
+- In `third_dihard_challenge_eval/data/rttm`, run command `cat *.rttm > all.rttm`. This will be used later to get the DER scores. Rest of the rttm files should be replaced with clustering model rttm files.
+[NOTE: all.rttm should be from the ground truth (since it is used to calculate DER) and data/rttm should have the clustering model rttm results]
 
 - Following these steps your DIHARD3 directory should have these files and folders to run the TS-VAD model:
 
@@ -92,14 +122,6 @@ conda activate tsvad
         # │         |── DH_EVAL_****
         # │             ├── <eachspeaker.pt>
         # |     ├── ts_eval.json
-
-## Add pre-trained libraries
-
-- Add [WavLM-Base+.pt](https://drive.google.com/file/d/1-zlAj2SyVJVsbhifwpTlAfrgc9qu-HDb/view?usp=share_link) in `ts-vad/pretrained_models` (build this folder)
-
-- Add [ecapa-tdnn.model](https://drive.google.com/file/d/1E-ju12Jy1fID2l4x-nj0zB5XUHSKWsRB/view?usp=drive_link) to `ts-vad/pretrained_models`
-
-- We use musan and rirs for data augmentation and you can pass these parameters in `run_train.sh`. Download [musan](https://www.openslr.org/17/) and [rirs noise](https://www.openslr.org/28/).
 
 ## Usage
 - Edit `run_train.sh` file with correct parameters. You should also pass musan and rirs path here.

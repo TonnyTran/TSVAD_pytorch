@@ -1,9 +1,11 @@
 python prepare_dihard.py \
-    --data_path "data/DIHARD3" \
+    --data_path "/home/users/ntu/adnan002/scratch/data/DIHARD3" \
     --type dev \
-    --source ts-vad/pretrained_models/ecapa-tdnn.model
+    --max_speaker 8 \
+    --source ../pretrained_models/ecapa-tdnn.model
 
 python prepare_dihard.py \
-    --data_path "data/DIHARD3" \
+    --data_path "/home/users/ntu/adnan002/scratch/data/DIHARD3" \
     --type eval \
-    --source ts-vad/pretrained_models/ecapa-tdnn.model
+    --max_speaker 8 \
+    --source ../pretrained_models/ecapa-tdnn.model

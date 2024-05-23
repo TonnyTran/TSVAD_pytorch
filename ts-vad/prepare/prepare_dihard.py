@@ -102,6 +102,7 @@ def extract_embeddings(batch, model):
 def get_args():
 	parser = argparse.ArgumentParser(description='')
 	parser.add_argument('--data_path', help='the path for dihard3')
+	parser.add_argument('--max_speaker', type=int, help='max number of speakers')
 	parser.add_argument('--type', help='dev or eval')
 	parser.add_argument('--source', help='the part for the speaker encoder')
 	parser.add_argument('--length_embedding', type=float, default=6, help='length of embeddings, seconds')
@@ -216,8 +217,8 @@ def main():
 			
 			new_audio_dict[key] = [new_audio, output_wav]
 
-		# filter new_audio_dict to get the longest 4 speakers
-		new_audio_dict = dict(heapq.nlargest(4, new_audio_dict.items(), key=lambda item: len(item[1][0])))
+		# filter new_audio_dict to get the longest max_speaker speakers
+		new_audio_dict = dict(heapq.nlargest(args.max_speaker, new_audio_dict.items(), key=lambda item: len(item[1][0])))
 		mapping = {}
 		mapping1 = {}
 

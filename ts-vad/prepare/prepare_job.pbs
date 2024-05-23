@@ -1,0 +1,10 @@
+#!/bin/bash
+#PBS -q normal
+#PBS -j oe
+#PBS -l select=1:ncpus=16:mem=25gb:ngpus=1
+#PBS -N prepare_dihard
+#PBS -l walltime=01:59:00
+#PBS -P Personal
+source /home/users/ntu/adnan002/scratch/miniconda3/bin/activate wespeak2
+cd /home/users/ntu/adnan002/scratch/release/TSVAD_pytorch/ts-vad/prepare
+./prepare_dihard.sh

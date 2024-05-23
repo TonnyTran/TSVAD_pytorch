@@ -14,7 +14,7 @@ parser.add_argument('--n_cpu',      type=int,   default=12,       help='Number o
 parser.add_argument('--test_step',  type=int,   default=1,        help='Test and save every [test_step] epochs')
 parser.add_argument('--lr',         type=float, default=0.0001,    help='Learning rate')
 parser.add_argument("--lr_decay",   type=float, default=0.90,     help='Learning rate decay every [test_step] epochs')
-
+parser.add_argument('--max_speaker',type=int, help='Maximum number of speakers')
 ### Testing setting
 parser.add_argument('--test_shift', type=float, default=16,      help='Input shift (second) for testing')
 parser.add_argument('--min_silence', type=float, default=0.32,      help='Remove the speech with short slience during testing')
