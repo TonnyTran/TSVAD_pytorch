@@ -23,6 +23,6 @@ class Loss(nn.Module):
             total_loss += loss
             
         x = self.m(x)
-        x = x.data.cpu().numpy()
+        x = x.detach().cpu().numpy()
 
         return total_loss / self.max_speaker, x

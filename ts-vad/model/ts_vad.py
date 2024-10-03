@@ -7,13 +7,14 @@ from model.WavLM import WavLM, WavLMConfig
 class TS_VAD(nn.Module):
     def __init__(self, args):
         super(TS_VAD, self).__init__()
+        self.device = torch.device("cuda" if torch.cuda.is_available() and not args.cpu else "cpu")
         # Speech Encoder
         max_speaker = args.max_speaker
         self.max_speaker = args.max_speaker
-        checkpoint = torch.load(args.speech_encoder_pretrain, map_location="cuda")
+        checkpoint = torch.load(args.speech_encoder_pretrain, map_location=self.device)
         cfg  = WavLMConfig(checkpoint['cfg'])
         cfg.encoder_layers = 6
-        self.speech_encoder = WavLM(cfg)
+        self.speech_encoder = WavLM(cfg).to(self.device)
         self.speech_encoder.train()
         self.speech_encoder.load_state_dict(checkpoint['model'], strict = False)
         self.speech_down = nn.Sequential(

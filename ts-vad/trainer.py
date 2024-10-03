@@ -23,8 +23,9 @@ def init_trainer(args):
 class trainer(nn.Module):
 	def __init__(self, args):
 		super(trainer, self).__init__()
-		self.ts_vad          = TS_VAD(args).cuda()
-		self.ts_loss         = Loss(args.max_speaker).cuda()	
+		self.device = torch.device("cuda" if torch.cuda.is_available() and not args.cpu else "cpu")
+		self.ts_vad          = TS_VAD(args).to(self.device)
+		self.ts_loss         = Loss(args.max_speaker).to(self.device)
 		self.optim           = torch.optim.AdamW(self.parameters(), lr = args.lr)
 		self.scheduler       = torch.optim.lr_scheduler.StepLR(self.optim, step_size = args.test_step, gamma = args.lr_decay)
 		# print("Model para number = %.2f"%(sum(param.numel() for param in self.ts_vad.parameters()) / 1e6))
@@ -39,10 +40,10 @@ class trainer(nn.Module):
 
 		for num, (rs, ts, labels) in enumerate(args.trainLoader, start = 1):
 			self.zero_grad()
-			labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
+			labels  = torch.tensor(labels, dtype=torch.float32).to(self.device)	
 			with autocast():
-				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
-				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
+				rs_embeds  = self.ts_vad.rs_forward(rs.to(self.device))
+				ts_embeds  = self.ts_vad.ts_forward(ts.to(self.device))
 				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
 				loss, _    = self.ts_loss.forward(outs, labels)	
 			scaler.scale(loss).backward()
@@ -68,10 +69,10 @@ class trainer(nn.Module):
 		res_dict = defaultdict(lambda: defaultdict(list))
 		rttm = open(args.rttm_save_path, "w")		
 		for num, (rs, ts, labels, filename, speaker_id, start) in enumerate(args.evalLoader, start = 1):
-			labels  = torch.tensor(labels, dtype=torch.float32).cuda()	
+			labels  = torch.tensor(labels, dtype=torch.float32).to(self.device)	
 			with torch.no_grad():		
-				rs_embeds  = self.ts_vad.rs_forward(rs.cuda())
-				ts_embeds  = self.ts_vad.ts_forward(ts.cuda())
+				rs_embeds  = self.ts_vad.rs_forward(rs.to(self.device))
+				ts_embeds  = self.ts_vad.ts_forward(ts.to(self.device))
 				outs       = self.ts_vad.cat_forward(rs_embeds, ts_embeds)
 				loss, outs   = self.ts_loss.forward(outs, labels)
 				B, _, T = outs.shape
@@ -118,7 +119,7 @@ class trainer(nn.Module):
 		print('\n')
 		print (args.rttm_save_path)
 
-		rttm_file_path = "/home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_eval/data/rttm/all.rttm"
+		rttm_file_path = f"{args.train_path}/data/DIHARD3/third_dihard_challenge_eval/data/rttm/all.rttm"
 		out = subprocess.check_output(['perl', 'tools/SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.25', '-s %s'%(args.rttm_save_path), '-r ' + rttm_file_path])
 		out = out.decode('utf-8')
 		DER, MS, FA, SC = float(out.split('/')[0]), float(out.split('/')[1]), float(out.split('/')[2]), float(out.split('/')[3])
@@ -138,7 +139,7 @@ class trainer(nn.Module):
 
 	def load_parameters(self, path):
 		selfState = self.state_dict()
-		loadedState = torch.load(path)
+		loadedState = torch.load(path, map_location=self.device)
 		for name, param in loadedState.items():
 			origName = name
 			if name not in selfState:

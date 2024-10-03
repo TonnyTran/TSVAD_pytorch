@@ -36,6 +36,7 @@ parser.add_argument('--simtrain', type=bool, default=False, help='For simulated 
 parser.add_argument('--speech_encoder_pretrain',  type=str,   default="pretrained_models/WavLM-Base+.pt",  help='Path of the pretrained speech_encoder')
 parser.add_argument('--train',   dest='train', action='store_true', help='Do training')
 parser.add_argument('--eval',    dest='eval', action='store_true', help='Do evaluation')
+parser.add_argument('--cpu', action='store_true', help='Use CPU instead of GPU')
 
 ## Init folders, trainer and loader
 args = init_system(parser.parse_args())
