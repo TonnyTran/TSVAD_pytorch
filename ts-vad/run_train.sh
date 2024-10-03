@@ -1,11 +1,14 @@
+DATA_PATH="data/DIHARD3vbx8"
+OUTPUT_PATH="exps/res24"
+
 python main.py \
---train_list /home/users/ntu/adnan002/scratch/data/DIHARD3downup/third_dihard_challenge_dev/data/ts_dev.json \
---eval_list /home/users/ntu/adnan002/scratch/data/DIHARD3downup/third_dihard_challenge_eval/data/ts_eval.json \
---train_path /home/users/ntu/adnan002/scratch/data/DIHARD3downup/third_dihard_challenge_dev/data \
---eval_path /home/users/ntu/adnan002/scratch/data/DIHARD3downup/third_dihard_challenge_eval/data \
---musan_path /home/users/ntu/adnan002/scratch/data/musan \
---rir_path /home/users/ntu/adnan002/scratch/data/RIRS_NOISES/simulated_rirs \
---save_path exps/finetune8 \
+--train_list ${DATA_PATH}/third_dihard_challenge_dev/data/ts_dev.json \
+--eval_list ${DATA_PATH}/third_dihard_challenge_eval/data/ts_eval.json \
+--train_path ${DATA_PATH}/third_dihard_challenge_dev/data \
+--eval_path ${DATA_PATH}/third_dihard_challenge_eval/data \
+--musan_path data/musan \
+--rir_path data/RIRS_NOISES/simulated_rirs \
+--save_path ${OUTPUT_PATH} \
 --max_speaker 8 \
 --warm_up_epoch 10 \
 --batch_size 40 \
@@ -14,5 +17,4 @@ python main.py \
 --lr 0.0001 \
 --test_step 1 \
 --max_epoch 40 \
---max_speaker 8 \
 --train
