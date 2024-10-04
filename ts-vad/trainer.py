@@ -118,7 +118,7 @@ class trainer(nn.Module):
 		print('\n')
 		print (args.rttm_save_path)
 
-		rttm_file_path = "/home/users/ntu/adnan002/scratch/data/DIHARD3/third_dihard_challenge_eval/data/rttm/all.rttm"
+		rttm_file_path = f"{args.eval_path}/all.rttm"
 		out = subprocess.check_output(['perl', 'tools/SCTK-2.4.12/src/md-eval/md-eval.pl', '-c 0.25', '-s %s'%(args.rttm_save_path), '-r ' + rttm_file_path])
 		out = out.decode('utf-8')
 		DER, MS, FA, SC = float(out.split('/')[0]), float(out.split('/')[1]), float(out.split('/')[2]), float(out.split('/')[3])
