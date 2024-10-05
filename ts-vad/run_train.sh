@@ -1,15 +1,15 @@
-DATA_PATH="data/DIHARD3vbx8"
+DATA_PATH="data/alimeeting"
 OUTPUT_PATH="exps/res24"
 
 python main.py \
---train_list ${DATA_PATH}/third_dihard_challenge_dev/data/ts_dev.json \
---eval_list ${DATA_PATH}/third_dihard_challenge_eval/data/ts_eval.json \
---train_path ${DATA_PATH}/third_dihard_challenge_dev/data \
---eval_path ${DATA_PATH}/third_dihard_challenge_eval/data \
---musan_path data/musan \
+--train_list ${DATA_PATH}/Train_Ali_far/ts_Train.json \
+--eval_list ${DATA_PATH}/Eval_Ali_far/ts_Eval.json \
+--train_path ${DATA_PATH}/Train_Ali_far \
+--eval_path ${DATA_PATH}/Eval_Ali_far \
+--musan_path /musan \
 --rir_path data/RIRS_NOISES/simulated_rirs \
 --save_path ${OUTPUT_PATH} \
---max_speaker 8 \
+--max_speaker 4 \
 --warm_up_epoch 10 \
 --batch_size 40 \
 --rs_len 4 \
