@@ -27,9 +27,9 @@ source activate wespeak2
 ## 2. Pull from GitHub
 
 ```bash
-git clone https://github.com/TonnyTran/TSVAD_pytorch.git
+git clone https://github.com/adnan-azmat/TSVAD_pytorch.git
 cd TSVAD_pytorch/ts-vad
-git checkout adnan
+git checkout u/adnan/alimeeting
 mkdir pretrained_models
 cd pretrained_models
 
