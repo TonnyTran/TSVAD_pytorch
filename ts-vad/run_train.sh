@@ -1,5 +1,5 @@
 DATA_PATH="data/DIHARD3vbx8"
-OUTPUT_PATH="exps/res24"
+OUTPUT_PATH="exps/wavlmbaseplus"
 
 python main.py \
 --train_list ${DATA_PATH}/third_dihard_challenge_dev/data/ts_dev.json \
@@ -17,4 +17,5 @@ python main.py \
 --lr 0.0001 \
 --test_step 1 \
 --max_epoch 40 \
+--speech_encoder_model microsoft/wavlm-base-plus \
 --train

@@ -2,7 +2,7 @@ import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
 from model.modules import *
-from model.WavLM import WavLM, WavLMConfig
+from transformers import AutoConfig, AutoModel
 
 class TS_VAD(nn.Module):
     def __init__(self, args):
@@ -10,26 +10,29 @@ class TS_VAD(nn.Module):
         # Speech Encoder
         max_speaker = args.max_speaker
         self.max_speaker = args.max_speaker
-        checkpoint = torch.load(args.speech_encoder_pretrain, map_location="cuda")
-        cfg  = WavLMConfig(checkpoint['cfg'])
-        cfg.encoder_layers = 6
-        self.speech_encoder = WavLM(cfg)
+
+        # Load config and model dynamically
+        self.speech_encoder = AutoModel.from_pretrained(args.speech_encoder_model)
         self.speech_encoder.train()
-        self.speech_encoder.load_state_dict(checkpoint['model'], strict = False)
+
+        # Dynamically obtain the embedding dimension
+        embedding_dim = self.speech_encoder.config.hidden_size
+
+        # Adjust the downstream layers according to the embedding dimension
         self.speech_down = nn.Sequential(
-            nn.Conv1d(768, 192, 5, stride=2, padding=2),
+            nn.Conv1d(embedding_dim, 192, 5, stride=2, padding=2),
             nn.BatchNorm1d(192),
             nn.ReLU(),
-            )
+        )
         
-        # TS-VAD Backend
+        # Adjust this example as needed based on how many speakers and their embeddings are combined
         self.backend_down = nn.Sequential(
-            nn.Conv1d(384 * max_speaker, 384, 5, stride=1, padding=2),
+            nn.Conv1d(384 * args.max_speaker, 384, 5, stride=1, padding=2),
             nn.BatchNorm1d(384),
             nn.ReLU(),
-            )
+        )
+
         self.pos_encoder = PositionalEncoding(384, dropout=0.05)
-        self.pos_encoder_m = PositionalEncoding(384, dropout=0.05)
         self.single_backend = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=384, dim_feedforward = 384 * 4, nhead=8), num_layers=3)
         self.multi_backend = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=384, dim_feedforward = 384 * 4, nhead=8), num_layers=3)
 
@@ -37,8 +40,8 @@ class TS_VAD(nn.Module):
     # Obtain the reference speech represnetation
     def rs_forward(self, x): # B, 25 * T
         B, _ = x.shape 
-        x = self.speech_encoder.extract_features(x)[0]
-        x = x.view(B, -1, 768)  # B, 50 * T, 768
+        x = self.speech_encoder(x).last_hidden_state
+        x = x.view(B, -1, self.speech_encoder.config.hidden_size)
         x = x.transpose(1,2)
         x = self.speech_down(x)
         x = x.transpose(1,2) # B, 25 * T, 192
@@ -73,7 +76,7 @@ class TS_VAD(nn.Module):
         cat_embeds = self.backend_down(cat_embeds)  # B, 384, T
         # Transformer for multiple speakers
         cat_embeds = torch.permute(cat_embeds, (2, 0, 1)) # T, B, 384
-        cat_embeds = self.pos_encoder_m(cat_embeds)
+        cat_embeds = self.pos_encoder(cat_embeds)
         cat_embeds = self.multi_backend(cat_embeds) # T, B, 384
         cat_embeds = torch.permute(cat_embeds, (1, 0, 2)) # B, T, 384
         # Results for each speaker

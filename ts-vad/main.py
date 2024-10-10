@@ -36,6 +36,7 @@ parser.add_argument('--simtrain', type=bool, default=False, help='For simulated 
 parser.add_argument('--speech_encoder_pretrain',  type=str,   default="pretrained_models/WavLM-Base+.pt",  help='Path of the pretrained speech_encoder')
 parser.add_argument('--train',   dest='train', action='store_true', help='Do training')
 parser.add_argument('--eval',    dest='eval', action='store_true', help='Do evaluation')
+parser.add_argument('--speech_encoder_model', type=str, default="facebook/wav2vec2-base", help='Hugging Face model identifier')
 
 ## Init folders, trainer and loader
 args = init_system(parser.parse_args())
@@ -59,7 +60,7 @@ if args.train == True:
 		s.train_network(args)
 		if args.epoch % args.test_step == 0:
 			s.save_parameters(args.model_save_path + "/model_%04d.model"%args.epoch)
-			if not args.simtrain:
-				s.eval_network(args)
+			print ("CODE WAS UPDATED")
+			s.eval_network(args)
 		args.epoch += 1
 	quit()
