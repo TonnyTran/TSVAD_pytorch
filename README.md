@@ -103,28 +103,48 @@ ts-vad
     └── alimeeting
         ├── Eval_Ali_far
         │   ├── audio_dir
+        │   │   ├── ...
+        │   │   └── (many .wav files)
         │   ├── rttm_dir
+        │   │   ├── ...
+        │   │   └── (many .rttm files)
         │   ├── target_audio
+        │   │   ├── ...
+        │   │   └── (many directories)
         │   ├── target_embedding
+        │   │   ├── ...
+        │   │   └── (many directories)
         │   ├── textgrid_dir
+        │   │   ├── ...
+        │   │   └── (many .TextGrid files)
         │   ├── all.rttm
         │   └── ts_Eval.json
         └── Train_Ali_far
             ├── audio_dir
             │   ├── R0003_M0046_MS002.wav
-            │   └── R0003_M0047_MS006.wav
+            │   ├── R0003_M0047_MS006.wav
+            │   ├── ...
+            │   └── (many more .wav files)
             ├── rttm_dir
             │   ├── R0003_M0046.rttm
-            │   └── R0003_M0047.rttm
+            │   ├── R0003_M0047.rttm
+            │   ├── ...
+            │   └── (many more .rttm files)
             ├── target_audio
             │   ├── R0003_M0046_MS002
-            │   └── R0003_M0047_MS006
+            │   ├── R0003_M0047_MS006
+            │   ├── ...
+            │   └── (many more directories)
             ├── target_embedding
             │   ├── R0003_M0046_MS002
-            │   └── R0003_M0047_MS006
+            │   ├── R0003_M0047_MS006
+            │   ├── ...
+            │   └── (many more directories)
             ├── textgrid_dir
             │   ├── R0003_M0046.TextGrid
-            │   └── R0003_M0047.TextGrid
+            │   ├── R0003_M0047.TextGrid
+            │   ├── ...
+            │   └── (many more .TextGrid files)
             └── ts_Train.json
 ```
 ## 5. Run TS-VAD
