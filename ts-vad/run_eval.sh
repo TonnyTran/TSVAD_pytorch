@@ -1,13 +1,6 @@
-DATA_PATH="data/alimeeting"
-OUTPUT_PATH="exps/eval24"
-
-# # # OPTIONAL: PRE-TRAINED 8 speaker 16 kHz v1 and DIHARD3 FINETUNED MODEL
-# # gdown 1h8X9GNkbW_eJJmttMeslz_3mkbLuM4v4
-# # sudo apt-get install unzip
-# # unzip newlongsimdata_pretrain_sep_24.zip
-# # rm newlongsimdata_pretrain_sep_24.zip
-
-MODEL_PATH="pretrained_models/newlongsimdata_pretrain_sep_24/p8new_15_19eval/model/model_0019_finetuned.model"
+DATA_PATH="/workspace/TSVAD_pytorch/ts-vad/data/alimeeting"
+OUTPUT_PATH="exps/eval24_31"
+MODEL_PATH="/workspace/TSVAD_pytorch/ts-vad/exps/res24/model/model_0031.model"
 
 python main.py \
 --train_list ${DATA_PATH}/Train_Ali_far/ts_Train.json \

@@ -44,6 +44,8 @@ def get_args():
                         help='the path for the orig audio')
     parser.add_argument('--target_audio_path', required=True,
                         help='the part for the output audio')
+    parser.add_argument('--output_json', required=True,
+                        help='the output JSON file path')
     args = parser.parse_args()
 
     return args
@@ -56,45 +58,66 @@ def main():
         data = line.split()
         room_set.add(data[1])
 
-    for room_id in tqdm.tqdm(room_set):
-        intervals = defaultdict(list)
-        new_intervals = defaultdict(list)
-        for line in (lines): 
-            data = line.split()
-            if data[1] == room_id:
-                stime = float(data[3])
-                etime = float(data[3]) + float(data[4])
-                spkr = int(data[-3]) # + 1
-                intervals[spkr].append([stime, etime])
+    with open(args.output_json, "w") as outs:
+        for room_id in tqdm.tqdm(room_set):
+            intervals = defaultdict(list)
+            new_intervals = defaultdict(list)
+            for line in (lines): 
+                data = line.split()
+                if data[1] == room_id:
+                    stime = float(data[3])
+                    etime = float(data[3]) + float(data[4])
+                    spkr = int(data[-3]) # + 1
+                    intervals[spkr].append([stime, etime])
 
-        # Remove the overlapped speeech    
-        for key in intervals:
-            new_interval = intervals[key]
-            for o_key in intervals:
-                if o_key != key:                
-                    new_interval = remove_overlap(copy.deepcopy(new_interval), copy.deepcopy(intervals[o_key]))
-            new_intervals[key] = new_interval
+            # Remove the overlapped speeech    
+            for key in intervals:
+                new_interval = intervals[key]
+                for o_key in intervals:
+                    if o_key != key:                
+                        new_interval = remove_overlap(copy.deepcopy(new_interval), copy.deepcopy(intervals[o_key]))
+                new_intervals[key] = new_interval
 
-        wav_file = glob.glob(os.path.join(args.orig_audio_path, room_id) + '*.wav')[0]
-        orig_audio, fs = soundfile.read(wav_file)
-        orig_audio = orig_audio[:,0]
+            wav_file = glob.glob(os.path.join(args.orig_audio_path, room_id) + '*.wav')[0]
+            orig_audio, fs = soundfile.read(wav_file)
+            orig_audio = orig_audio[:,0]
+            length = len(orig_audio)
+            duration = length / fs
 
-        # # Cut and save the clean speech part
-        id_full = wav_file.split('/')[-1][:-4]
-        for key in new_intervals:
-            output_dir = os.path.join(args.target_audio_path, id_full)
-            os.makedirs(output_dir, exist_ok = True)
-            output_wav = os.path.join(output_dir, str(key) + '.wav')
-            new_audio = []    
-            for interval in new_intervals[key]:
-                s, e = interval
-                s *= 16000
-                e *= 16000
-                new_audio.extend(orig_audio[int(s):int(e)])
-                
-            soundfile.write(output_wav, new_audio, 16000)
-        output_wav = os.path.join(output_dir, 'all.wav')
-        soundfile.write(output_wav, orig_audio, 16000)
+            id_full = os.path.splitext(os.path.basename(wav_file))[0]
+
+            # Save the labels
+            for key in intervals:
+                labels = [0] * int(duration * 25)  # 40ms frames
+                for interval in intervals[key]:
+                    s, e = interval
+                    start_idx = int(s * 25)
+                    end_idx = min(int(e * 25) + 1, len(labels))
+                    for i in range(start_idx, end_idx):
+                        labels[i] = 1
+
+                speaker_id = key  # You can adjust this if you have actual speaker IDs
+
+                res = {'filename': id_full, 'speaker_key': key, 'speaker_id': speaker_id, 'labels': labels}
+                json.dump(res, outs)
+                outs.write('\n')
+
+            # # Cut and save the clean speech part
+            id_full = wav_file.split('/')[-1][:-4]
+            for key in new_intervals:
+                output_dir = os.path.join(args.target_audio_path, id_full)
+                os.makedirs(output_dir, exist_ok = True)
+                output_wav = os.path.join(output_dir, str(key) + '.wav')
+                new_audio = []    
+                for interval in new_intervals[key]:
+                    s, e = interval
+                    s *= 16000
+                    e *= 16000
+                    new_audio.extend(orig_audio[int(s):int(e)])
+                    
+                soundfile.write(output_wav, new_audio, 16000)
+            output_wav = os.path.join(output_dir, 'all.wav')
+            soundfile.write(output_wav, orig_audio, 16000)
 
 if __name__ == '__main__':
     main()

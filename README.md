@@ -5,7 +5,7 @@ This guide will walk you through setting up the TSVAD_pytorch environment and do
 ## 1. Conda Environment Setup
 
 ```bash
-cd /mnt
+cd /workspace
 rm -rf miniconda3/
 
 INSTALLER="./Miniconda3-latest-Linux-x86_64.sh"
@@ -16,11 +16,11 @@ else
     echo "Installer $INSTALLER already exists."
 fi
 
-INSTALL_DIR="/mnt/miniconda3"
+INSTALL_DIR="/workspace/miniconda3"
 
 bash "$INSTALLER" -b -p "$INSTALL_DIR"
-export PATH="/mnt/miniconda3/bin:$PATH"
-conda env create --name wespeak2 --file=/mnt/wespeak2.yml
+export PATH="/workspace/miniconda3/bin:$PATH"
+conda env create --name wespeak2 --file=/workspace/wespeak2.yml
 source activate wespeak2
 ```
 
@@ -74,22 +74,27 @@ rm -rf Eval_Ali
 
 ## 4. Prepare Target Audio and Embeddings
 
-a. Use `ts-vad/prepare/alimeeting/make_textgrid_rttm.py` to create rttm files for AliMeeting
-
-b. Prepare target audio and target embeddings using `ts-vad/prepare/alimeeting/prepare_alimeeting.sh`
-
-Alternatively you can use below script to download pre-computed target embeddings
+a. To get target audio and embeddings for Train_Ali_far you can use the below script:
 
 ```bash
-gdown 1qM5bGnkYAQMQGhAVIn2R1IbrD8gtKlrH
-tar xf alimeeting_embedding.tar
-mv embedding/train_target_embedding Train_Ali_far/target_embedding
-mv embedding/ts_Train.json Train_Ali_far/ts_train.json
-mv embedding/eval_target_embedding Eval_Ali_far/target_embedding
-mv embedding/ts_Eval.json Eval_Ali_far/ts_eval.json
-rm alimeeting_embedding.tar
-rm -rf embedding
+# Set correct paths
+data_path=/workspace/TSVAD_pytorch/ts-vad/data/alimeeting
+ecapa_path=/workspace/TSVAD_pytorch/ts-vad/pretrained_models/ecapa-tdnn.model
+
+cd wespeaker_alimeeting
+
+python modules/prepare_data.py \
+    --data_path ${data_path} \
+    --type Train \
+    --source ${ecapa_path}
+fi
 ```
+
+b. For Eval_Ali_far we first need to get the clustering results and then generate target audio and embeddings.
+
+This can be done by running the script file here: `wespeaker_alimeeting/run.sh` . Note: Set the `data_path` and `ecapa_path` before running the script
+
+The score of the wespeaker clustering should be: `DER / MS / FA / SC = 16.54 / 14.53 / 1.13 / 0.88` (Collor Size: 0.25)
 
 Your data directory should look like this:
 ```
@@ -124,6 +129,10 @@ ts-vad
 ```
 ## 5. Run TS-VAD
 
-Use the `run_train.sh` script in `ts-vad` to train TS-VAD
+To run TS-VAD model on alimeeting dataset
 
-Use the `run_eval.sh` script in `ts-vad` to evaluate using an existing model
+Use the `run_train.sh` script in `ts-vad` to train TS-VAD
+The expected result should be: DER 4.58%, MS 2.94%, FA 1.13%, SC 0.51%
+
+
+Use the `run_eval.sh` script in `ts-vad` to evaluate using an existing trained model

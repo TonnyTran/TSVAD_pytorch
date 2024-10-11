@@ -28,8 +28,8 @@ parser.add_argument('--train_path', type=str,   default="data/alimeeting/Train_A
 parser.add_argument('--eval_list',  type=str,   default="data/alimeeting/Eval_Ali_far/ts_Eval.json",      help='The path of the evaluation list')
 parser.add_argument('--eval_path',  type=str,   default="data/alimeeting/Eval_Ali_far", help='The path of the evaluation data')
 parser.add_argument('--save_path',  type=str,    default="", help='Path to save the clean list')
-parser.add_argument('--musan_path',  type=str,   default="data/musan", help='The path of the evaluation data')
-parser.add_argument('--rir_path',  type=str,   default="data/RIRS_NOISES/simulated_rirs", help='The path of the evaluation data')
+parser.add_argument('--musan_path',  type=str,   default="/workspace/TSVAD_pytorch/ts-vad/data/musan", help='The path of the evaluation data')
+parser.add_argument('--rir_path',  type=str,   default="/workspace/TSVAD_pytorch/ts-vad/data/RIRS_NOISES/simulated_rirs", help='The path of the evaluation data')
 parser.add_argument('--simtrain', type=bool, default=False, help='For simulated data training pass train_list and train_path of simulated data. Eval list and path is not used in this mode. You can call s.eval_network(args) if you wish to run eval as well.')
 
 ### Others

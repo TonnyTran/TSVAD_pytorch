@@ -1,13 +1,15 @@
-DATA_PATH="data/alimeeting"
+DATA_PATH="/workspace/TSVAD_pytorch/ts-vad/data/alimeeting"
 OUTPUT_PATH="exps/res24"
+MUSAN_PATH="/workspace/TSVAD_pytorch/ts-vad/data/musan"
+RIRS_PATH="/workspace/TSVAD_pytorch/ts-vad/data/RIRS_NOISES/simulated_rirs"
 
 python main.py \
 --train_list ${DATA_PATH}/Train_Ali_far/ts_Train.json \
 --eval_list ${DATA_PATH}/Eval_Ali_far/ts_Eval.json \
 --train_path ${DATA_PATH}/Train_Ali_far \
 --eval_path ${DATA_PATH}/Eval_Ali_far \
---musan_path /musan \
---rir_path data/RIRS_NOISES/simulated_rirs \
+--musan_path ${MUSAN_PATH} \
+--rir_path ${RIRS_PATH} \
 --save_path ${OUTPUT_PATH} \
 --max_speaker 4 \
 --warm_up_epoch 10 \
