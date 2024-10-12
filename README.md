@@ -170,7 +170,7 @@ ts-vad
 To run TS-VAD model on alimeeting dataset
 
 Use the `run_train.sh` script in `ts-vad` to train TS-VAD
-The expected result should be: DER 4.58%, MS 2.94%, FA 1.13%, SC 0.51%
+The expected result is: `DER 4.58%, MS 2.94%, FA 1.13%, SC 0.51%`
 
 
 Use the `run_eval.sh` script in `ts-vad` to evaluate using an existing trained model
