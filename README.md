@@ -132,12 +132,30 @@ ts-vad
             │   └── (many more .rttm files)
             ├── target_audio
             │   ├── R0003_M0046_MS002
+            │   │   │   ├── 1.wav
+            │   │   │   ├── 2.wav
+            │   │   │   ├── 3.wav
+            │   │   │   └── 4.wav
+            │   │   │   └── all.wav
             │   ├── R0003_M0047_MS006
+            │   │   │   ├── 1.wav
+            │   │   │   ├── 2.wav
+            │   │   │   ├── 3.wav
+            │   │   │   └── 4.wav
+            │   │   │   └── all.wav
             │   ├── ...
             │   └── (many more directories)
             ├── target_embedding
             │   ├── R0003_M0046_MS002
+            │   │   │   ├── 1.pt
+            │   │   │   ├── 2.pt
+            │   │   │   ├── 3.pt
+            │   │   │   └── 4.pt
             │   ├── R0003_M0047_MS006
+            │   │   │   ├── 1.pt
+            │   │   │   ├── 2.pt
+            │   │   │   ├── 3.pt
+            │   │   │   └── 4.pt
             │   ├── ...
             │   └── (many more directories)
             ├── textgrid_dir
